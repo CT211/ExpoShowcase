@@ -1,0 +1,1897 @@
+<!DOCTYPE html><html lang="en"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIM Platform - Mobility &amp; Logistics Edition: Connect with the Right Expert, Every Time</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(138, 43, 226, 0.8); }
+        }
+        
+        .fade-in-up { 
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        .slide-in-right { 
+            animation: slideInRight 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        .pulse-animation { animation: pulse 2s ease-in-out infinite; }
+        .rotate-animation { animation: rotate 2s linear infinite; }
+        .glow-animation { animation: glow 2s ease-in-out infinite; }
+        
+        .data-card {
+            transition: all 0.3s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(138, 43, 226, 0.3);
+        }
+        
+        .matching-score {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700 0%, #8A2BE2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .case-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .case-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(138, 43, 226, 0.3);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(138, 43, 226, 0.3);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700 0%, #8A2BE2 100%);
+        }
+        
+        .feedback-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(138, 43, 226, 0.2);
+            outline: none;
+        }
+        .feedback-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700 0%, #8A2BE2 100%);
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            height: 4px;
+            background: rgba(138, 43, 226, 0.1);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700 0%, #8A2BE2 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .analysis-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,215,0,0.1) 50%, rgba(138,43,226,0.1) 100%);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .analysis-item {
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-cols-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+            .grid-cols-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .grid-cols-5 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .matching-score {
+                font-size: 3rem;
+            }
+            .conversation-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-purple-50 to-indigo-50 min-h-screen text-gray-700">
+    
+    <div id="progressBar" class="progress-bar" style="display: none;">
+        <div id="progressBarFill" class="progress-bar-fill" style="width: 0%"></div>
+    </div>
+    
+    <div id="mainContainer" class="container mx-auto px-4 py-8"></div>
+
+    <script>
+        // ========================================
+        // 📚 3 Mobility & Logistics Case Studies Database
+        // ========================================
+        
+        const CASE_STUDIES = {
+            ondemand: {
+                title: "Case 1: On-Demand Dispatch - Urgent Delivery",
+                industry: "Logistics - Instant Delivery",
+                icon: "🚚",
+                customer: {
+                    basic: {
+                        name: "Thomas Wong",
+                        age: 35,
+                        gender: "Male",
+                        location: "Hong Kong - Central",
+                        occupation: "Marketing Director",
+                        company: "Tech Startup",
+                        income: "Monthly Salary $55,000"
+                    },
+                    family: {
+                        status: "Single",
+                        children: 0
+                    },
+                    personality: {
+                        decisionStyle: "Fast & Result-oriented",
+                        communicationStyle: "Brief & Direct - No Small Talk",
+                        riskTolerance: "High - Values Speed Over Everything",
+                        trustBuilding: "Performance-based trust",
+                        pacePreference: "Immediate action, minimal questions"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "Urgent document pickup and delivery", priority: "P0", confidence: 98 },
+                            { text: "Within 45 minutes delivery time", priority: "P0", confidence: 95 },
+                            { text: "Real-time tracking and updates", priority: "P0", confidence: 92 }
+                        ],
+                        secondary: [
+                            { text: "Professional handling of documents", priority: "P1", confidence: 85 },
+                            { text: "Delivery confirmation with signature", priority: "P1", confidence: 80 }
+                        ],
+                        hidden: [
+                            { text: "Business meeting deadline pressure", confidence: 88 },
+                            { text: "Previous delivery service disappointments", confidence: 75 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 92,
+                        estimatedValue: "HKD 250 (immediate) + HKD 15,000/year (recurring customer)",
+                        timeToDecision: "Immediate - within 2 minutes",
+                        followUpStrategy: "Fast confirmation, real-time updates, no unnecessary communication, deliver on promise"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm Evelyn, your AI Logistics Concierge. How can I help you today?", user: "I need to send some documents urgently. Can you help?", analysis: null },
+                    { bot: "Absolutely! Where do you need to pick up from, and where should we deliver to?", user: "Pickup from Central, Des Voeux Road. Deliver to Causeway Bay, Hennessy Road", analysis: { needs: ["Urgent delivery", "Central to Causeway Bay"], signals: ["Time-sensitive", "Clear locations", "Direct communication"], routing: "On-demand dispatch specialist", skills: ["Fast response", "Route optimization"] } },
+                    { bot: "Got it. How quickly do you need this delivered?", user: "I need it there in 45 minutes max. I have a meeting at 3pm", analysis: { needs: ["45-minute deadline", "Meeting deadline"], signals: ["Hard deadline", "Business urgency", "Time pressure"], routing: "Dispatch Coordinator", skills: ["Urgent handling", "Time management"] } },
+                    { bot: "Understood. What type of documents are these? Any special handling required?", user: "Just business contracts, nothing fragile. But they're very important", analysis: { needs: ["Business documents", "Important materials"], signals: ["Professional handling required", "High stakes"], routing: "Confirmed: Dispatch Coordinator", skills: ["Professional service", "Reliability"] } },
+                    { bot: "Perfect. I'll arrange this immediately. You'll get real-time tracking and updates. Confirm pickup at Des Voeux Road Central, delivery to Hennessy Road Causeway Bay within 45 minutes?", user: "Yes, confirm! Please hurry", analysis: { needs: ["Immediate action", "Confirmation needed"], signals: ["Ready to proceed", "Urgency confirmed", "No more questions needed"], routing: "Final: Dispatch Coordinator - Immediate assignment", skills: ["Fast execution", "Real-time coordination"] } },
+                    { bot: "Done! Connecting you with our dispatch coordinator for immediate action...", user: null, analysis: null }
+                ],
+                bestAgent: {
+                    id: 'agent_dispatch',
+                    name: 'Kevin Lau',
+                    photo: '👨‍💼',
+                    title: 'Dispatch Coordinator',
+                    experience: 7,
+                    score: 94.8,
+                    matchReasons: [
+                        { category: 'Expertise Match', score: 40, details: 'Specialist in urgent on-demand dispatch with excellent route optimization and real-time coordination skills' },
+                        { category: 'Client Type', score: 32, details: 'Excels with time-sensitive clients who need immediate action and minimal back-and-forth communication' },
+                        { category: 'Personality Match', score: 15, details: 'Fast-paced and action-oriented - perfect for clients who value speed and efficiency above all' },
+                        { category: 'Historical Performance', score: 7.8, details: '92% conversion rate, 96% on-time delivery, 4.8/5.0 customer satisfaction in urgent deliveries' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Corporate Delivery Account', probability: 85, timing: 'After successful delivery', reason: 'Business professionals with recurring urgent delivery needs typically convert to corporate accounts' },
+                    { product: 'Priority Membership Plan', probability: 78, timing: 'Within 1 week', reason: 'Frequent users benefit from priority service and discounted rates' },
+                    { product: 'Scheduled Regular Deliveries', probability: 65, timing: '2-4 weeks later', reason: 'Many urgent delivery users discover ongoing delivery needs for their business' }
+                ]
+            },
+            
+            b2b: {
+                title: "Case 2: B2B Logistics - Corporate Partnership",
+                industry: "Logistics - Enterprise Solutions",
+                icon: "📦",
+                customer: {
+                    basic: {
+                        name: "Sarah Chen",
+                        age: 41,
+                        gender: "Female",
+                        location: "Hong Kong - Kwun Tong",
+                        occupation: "Operations Manager",
+                        company: "E-commerce Company (150 employees)",
+                        income: "Company Logistics Budget: HKD 500K/year"
+                    },
+                    family: {
+                        status: "Married",
+                        children: 2
+                    },
+                    personality: {
+                        decisionStyle: "Data-driven & Process-oriented",
+                        communicationStyle: "Professional & Detailed",
+                        riskTolerance: "Low - Needs Reliability & Consistency",
+                        trustBuilding: "Values track record and SLA compliance",
+                        pacePreference: "Methodical, wants comprehensive understanding"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "Daily logistics for 200-300 orders/day", priority: "P0", confidence: 98 },
+                            { text: "98% on-time delivery SLA", priority: "P0", confidence: 96 },
+                            { text: "Real-time tracking dashboard", priority: "P0", confidence: 94 }
+                        ],
+                        secondary: [
+                            { text: "Competitive pricing with volume discounts", priority: "P1", confidence: 90 },
+                            { text: "Dedicated account manager", priority: "P1", confidence: 88 }
+                        ],
+                        hidden: [
+                            { text: "Current provider reliability issues", confidence: 85 },
+                            { text: "Budget approval process constraints", confidence: 78 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 75,
+                        estimatedValue: "HKD 500K/year (initial contract) + HKD 2M over 3 years",
+                        timeToDecision: "2-3 weeks (includes evaluation and approval)",
+                        followUpStrategy: "Present detailed service plan, provide trial period data, demonstrate SLA compliance, offer competitive pricing with clear terms"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm Evelyn, your AI Logistics Concierge. How can I assist you today?", user: "Hi, we're looking for a new logistics partner for our e-commerce business. Can you help?", analysis: null },
+                    { bot: "Of course! I'd be happy to help. Can you tell me about your current delivery volume and requirements?", user: "We handle about 200 to 300 orders per day. Need reliable daily pickups and deliveries across Hong Kong", analysis: { needs: ["High volume logistics", "200-300 orders/day", "Reliable service"], signals: ["B2B client", "Recurring needs", "Professional setup"], routing: "B2B logistics specialist", skills: ["Volume handling", "Account management"] } },
+                    { bot: "That's a substantial volume. What are your current pain points with your existing provider, if any?", user: "Our main issue is inconsistent on-time delivery. We need at least 98% on-time rate. Also need better tracking visibility", analysis: { needs: ["98% on-time SLA", "Tracking visibility", "Reliability"], signals: ["Previous provider issues", "Clear SLA requirements", "Professional standards"], routing: "Logistics Account Manager", skills: ["SLA management", "Dashboard solutions"] } },
+                    { bot: "Understood. Those are critical requirements. What about pricing - do you have a budget range in mind?", user: "Current spend is around 500K per year. Open to similar or slightly higher if we get better service and SLA guarantees", analysis: { needs: ["HKD 500K budget", "Value for money"], signals: ["Budget clarity", "Willing to pay for quality", "ROI-focused"], routing: "Confirmed: B2B Logistics Account Manager", skills: ["Pricing strategy", "Value proposition"] } },
+                    { bot: "Perfect. One more question - would you need a dedicated account manager, or are you comfortable with standard support?", user: "Definitely need a dedicated person. We have specific processes and need someone who understands our business", analysis: { needs: ["Dedicated account manager", "Process integration"], signals: ["Long-term partnership mindset", "Custom requirements", "Professional relationship"], routing: "Final: Logistics Account Manager with dedicated support model", skills: ["Relationship management", "Process customization"] } },
+                    { bot: "Excellent. I have all the information I need. Let me match you with an account manager who specializes in e-commerce logistics partnerships...", user: null, analysis: null }
+                ],
+                bestAgent: {
+                    id: 'agent_b2b',
+                    name: 'Angela Choi',
+                    photo: '👩‍💼',
+                    title: 'Logistics Account Manager',
+                    experience: 12,
+                    score: 93.5,
+                    matchReasons: [
+                        { category: 'Expertise Match', score: 39, details: 'Expert in B2B logistics partnerships, SLA management, and e-commerce delivery solutions with proven track record' },
+                        { category: 'Client Type', score: 31, details: 'Excels with corporate clients who need consistent service, clear processes, and long-term partnership approach' },
+                        { category: 'Personality Match', score: 16, details: 'Professional and detail-oriented - perfect match for data-driven, process-focused decision makers' },
+                        { category: 'Historical Performance', score: 7.5, details: '75% conversion rate, 98.5% SLA compliance, 4.9/5.0 corporate client satisfaction' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Warehouse & Fulfillment Services', probability: 82, timing: '3-6 months after contract start', reason: 'E-commerce companies often need integrated warehousing as they grow' },
+                    { product: 'International Shipping Solutions', probability: 70, timing: '6-12 months later', reason: 'Growing e-commerce businesses typically expand to cross-border sales' },
+                    { product: 'Returns Management Service', probability: 75, timing: '3-6 months after contract', reason: 'E-commerce logistics naturally includes returns handling needs' }
+                ]
+            },
+            
+            exceptions: {
+                title: "Case 3: Exception Handling - Crisis Resolution",
+                industry: "Logistics - Problem Resolution",
+                icon: "🚨",
+                customer: {
+                    basic: {
+                        name: "David Tan",
+                        age: 38,
+                        gender: "Male",
+                        location: "Hong Kong - Tsim Sha Tsui",
+                        occupation: "Restaurant Owner",
+                        company: "Fine Dining Restaurant",
+                        income: "Business Owner"
+                    },
+                    family: {
+                        status: "Married",
+                        children: 1
+                    },
+                    personality: {
+                        decisionStyle: "Emotional Under Stress",
+                        communicationStyle: "Frustrated & Demanding Immediate Answers",
+                        riskTolerance: "Zero - Business is at Stake",
+                        trustBuilding: "Needs immediate problem solving to restore trust",
+                        pacePreference: "Crisis mode - wants instant resolution"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "Urgent resolution of delayed critical delivery", priority: "P0", confidence: 99 },
+                            { text: "Immediate status update and action plan", priority: "P0", confidence: 97 },
+                            { text: "Prevent business loss from missing ingredients", priority: "P0", confidence: 95 }
+                        ],
+                        secondary: [
+                            { text: "Compensation for business impact", priority: "P1", confidence: 88 },
+                            { text: "Guarantee this won't happen again", priority: "P1", confidence: 90 }
+                        ],
+                        hidden: [
+                            { text: "Fear of losing reputation with customers", confidence: 92 },
+                            { text: "Considering switching providers", confidence: 85 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 65,
+                        estimatedValue: "HKD 150K/year retention + referrals",
+                        timeToDecision: "Immediate - based on problem resolution quality",
+                        followUpStrategy: "Immediate acknowledgment, clear action plan, frequent updates, fast resolution, follow-up to restore trust"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm Evelyn, your AI Logistics Concierge. How can I help you?", user: "Where is my delivery?! It was supposed to be here 2 hours ago! This is unacceptable!", analysis: null },
+                    { bot: "I sincerely apologize for this delay. I understand this is urgent. Can you provide your order number so I can check immediately?", user: "Order #LD89234. I need fresh seafood for tonight's dinner service. If it doesn't arrive in the next hour, I'll have to cancel reservations!", analysis: { needs: ["Urgent delivery resolution", "Fresh seafood", "1-hour deadline"], signals: ["High stress", "Business impact", "Critical situation"], routing: "Exception handling specialist", skills: ["Crisis management", "Fast problem solving"] } },
+                    { bot: "Thank you. Let me check the status right now... I can see the delivery was delayed due to traffic. Current location is 15 minutes away. I'm escalating this to our operations team immediately.", user: "15 minutes?! You said 2 hours ago it would be 30 minutes! I can't trust these updates anymore!", analysis: { needs: ["Immediate action", "Trust restoration"], signals: ["Trust broken", "Emotional state", "Needs reassurance"], routing: "Operations Support Lead", skills: ["Emotional management", "Trust rebuilding"] } },
+                    { bot: "I completely understand your frustration, and I apologize. Our operations lead is now personally tracking this delivery. I'll stay on this case until it's resolved. Would you like me to have someone call you directly with live updates?", user: "Yes! I need to know exactly when it will arrive. And I want to know what you're going to do to make this right", analysis: { needs: ["Direct communication", "Compensation discussion"], signals: ["Calming down slightly", "Open to resolution", "Wants accountability"], routing: "Confirmed: Operations Support Lead with compensation authority", skills: ["Direct communication", "Service recovery"] } },
+                    { bot: "Absolutely. Our Operations Support Lead will call you within 2 minutes with the exact ETA and will discuss compensation for this delay. Is this the best number to reach you?", user: "Yes, this number. Please make sure someone calls me immediately", analysis: { needs: ["Immediate callback", "Personal attention"], signals: ["Willing to engage", "Needs immediate action", "Critical to retain"], routing: "Final: Operations Support Lead - Immediate escalation with callback", skills: ["Personal follow-up", "Crisis resolution"] } },
+                    { bot: "Confirmed. Connecting you with Jason Ng, our Operations Support Lead, who will personally handle your case and call you within 2 minutes...", user: null, analysis: null }
+                ],
+                bestAgent: {
+                    id: 'agent_exceptions',
+                    name: 'Jason Ng',
+                    photo: '👨‍💼',
+                    title: 'Operations Support Lead',
+                    experience: 10,
+                    score: 92.3,
+                    matchReasons: [
+                        { category: 'Expertise Match', score: 38, details: 'Expert in crisis management, exception handling, and service recovery with strong cross-functional coordination skills' },
+                        { category: 'Client Type', score: 30, details: 'Excels with stressed, emotional clients in crisis situations who need immediate resolution and empathy' },
+                        { category: 'Personality Match', score: 17, details: 'Calm under pressure with excellent emotional intelligence - perfect for de-escalating tense situations' },
+                        { category: 'Historical Performance', score: 7.3, details: '65% retention rate in crisis situations, 4.7/5.0 recovery satisfaction, 89% issue resolution within SLA' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Premium Support Plan', probability: 70, timing: 'After successful resolution', reason: 'Clients who experience problems often upgrade to premium support to prevent future issues' },
+                    { product: 'Backup Delivery Insurance', probability: 75, timing: 'Within 1 week', reason: 'Business owners want protection against future delivery failures that could impact operations' },
+                    { product: 'Dedicated Account Support', probability: 68, timing: '2-4 weeks later', reason: 'After crisis resolution, clients value having a dedicated contact to prevent future problems' }
+                ]
+            }
+        };
+        
+        // ========================================
+        // 👥 Agent Profile Database (Mobility & Logistics Specialists)
+        // ========================================
+        
+        const AGENT_PROFILES = {
+            agent_dispatch: {
+                id: 'agent_dispatch',
+                name: 'Kevin Lau',
+                photo: '👨‍💼',
+                title: 'Dispatch Coordinator',
+                experience: 7,
+                age: 32,
+                education: 'Bachelor of Logistics Management',
+                certifications: ['Certified Logistics Professional', 'Advanced Route Optimization', 'Fleet Management Certificate'],
+                personality: {
+                    extroversion: 8,
+                    agreeableness: 7,
+                    conscientiousness: 10,
+                    emotionalStability: 9,
+                    openness: 7,
+                    speedOriented: 10,
+                    decisionMaking: 10
+                },
+                skills: {
+                    urgentDispatch: 10,
+                    routeOptimization: 10,
+                    realTimeCoordination: 10,
+                    fastDecisionMaking: 10,
+                    pressureHandling: 9,
+                    timeManagement: 10
+                },
+                performance: {
+                    conversionRate: 92,
+                    avgDeliveryValue: 250,
+                    customerSatisfaction: 4.8,
+                    onTimeDeliveryRate: 96,
+                    avgResponseTime: 90
+                },
+                learningData: {
+                    totalMatches: 1847,
+                    successfulMatches: 1699,
+                    accuracyRate: 92.0,
+                    improvementTrend: '+8.5%'
+                }
+            },
+            agent_b2b: {
+                id: 'agent_b2b',
+                name: 'Angela Choi',
+                photo: '👩‍💼',
+                title: 'Logistics Account Manager',
+                experience: 12,
+                age: 39,
+                education: 'MBA, Bachelor of Supply Chain Management',
+                certifications: ['Certified Supply Chain Professional', 'Account Management Excellence', 'SLA Management Specialist'],
+                personality: {
+                    extroversion: 8,
+                    agreeableness: 9,
+                    conscientiousness: 10,
+                    emotionalStability: 9,
+                    openness: 8,
+                    processOriented: 10,
+                    relationshipBuilding: 10
+                },
+                skills: {
+                    b2bRelationshipManagement: 10,
+                    slaCompliance: 10,
+                    processCustomization: 10,
+                    corporateNegotiation: 9,
+                    dataAnalysis: 9,
+                    longTermPlanning: 10
+                },
+                performance: {
+                    conversionRate: 75,
+                    avgContractValue: 500000,
+                    customerSatisfaction: 4.9,
+                    slaComplianceRate: 98.5,
+                    clientRetentionRate: 94
+                },
+                learningData: {
+                    totalMatches: 324,
+                    successfulMatches: 243,
+                    accuracyRate: 75.0,
+                    improvementTrend: '+6.8%'
+                }
+            },
+            agent_exceptions: {
+                id: 'agent_exceptions',
+                name: 'Jason Ng',
+                photo: '👨‍💼',
+                title: 'Operations Support Lead',
+                experience: 10,
+                age: 36,
+                education: 'Bachelor of Operations Management, Crisis Management Certification',
+                certifications: ['Certified Operations Manager', 'Service Recovery Specialist', 'Conflict Resolution Expert'],
+                personality: {
+                    extroversion: 7,
+                    agreeableness: 10,
+                    conscientiousness: 9,
+                    emotionalStability: 10,
+                    openness: 8,
+                    empathy: 10,
+                    calmUnderPressure: 10
+                },
+                skills: {
+                    crisisManagement: 10,
+                    emotionalIntelligence: 10,
+                    problemSolving: 10,
+                    crossFunctionalCoordination: 9,
+                    serviceRecovery: 10,
+                    conflictResolution: 10
+                },
+                performance: {
+                    conversionRate: 65,
+                    avgRecoveryTime: 45,
+                    customerSatisfaction: 4.7,
+                    retentionRateAfterIssue: 65,
+                    issueResolutionRate: 89
+                },
+                learningData: {
+                    totalMatches: 892,
+                    successfulMatches: 580,
+                    accuracyRate: 65.0,
+                    improvementTrend: '+11.2%'
+                }
+            }
+        };
+        
+        // ========================================
+        // 🎬 Scene Controller
+        // ========================================
+        
+        const SceneManager = {
+            currentScene: 'intro',
+            currentCase: null,
+            conversationPaused: false,
+            conversationCompleted: false,
+            sceneOrder: ['intro', 'caseSelect', 'conversation', 'processing', 'cdp', 'matching', 'agentProfile', 'aiCoaching', 'feedback', 'crossProduct', 'learning', 'final'],
+            
+            getProgress() {
+                const index = this.sceneOrder.indexOf(this.currentScene);
+                return index >= 0 ? Math.round((index / (this.sceneOrder.length - 1)) * 100) : 0;
+            },
+            
+            updateProgressBar() {
+                const progressBar = document.getElementById('progressBar');
+                const progressBarFill = document.getElementById('progressBarFill');
+                
+                if (this.currentScene === 'intro' || this.currentScene === 'caseSelect') {
+                    progressBar.style.display = 'none';
+                } else {
+                    progressBar.style.display = 'block';
+                    progressBarFill.style.width = this.getProgress() + '%';
+                }
+            },
+            
+            switchTo(sceneName, data = {}) {
+                this.currentScene = sceneName;
+                this.updateProgressBar();
+                
+                const container = document.getElementById('mainContainer');
+                container.innerHTML = '';
+                container.scrollTop = 0;
+                window.scrollTo(0, 0);
+                
+                const scenes = {
+                    intro: IntroScene,
+                    caseSelect: CaseSelectScene,
+                    conversation: ConversationScene,
+                    processing: ProcessingScene,
+                    cdp: CDPScene,
+                    matching: MatchingScene,
+                    agentProfile: AgentProfileScene,
+                    aiCoaching: AICoachingScene,
+                    feedback: FeedbackScene,
+                    crossProduct: CrossProductScene,
+                    learning: LearningScene,
+                    final: FinalScene
+                };
+                
+                if (scenes[sceneName]) {
+                    scenes[sceneName](container, data);
+                }
+            }
+        };
+        
+        // ========================================
+        // 🎥 Scene 1: Introduction
+        // ========================================
+        
+        function IntroScene(container) {
+            container.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center">
+                    <div class="text-center fade-in-up">
+                        <div class="text-6xl font-black mb-6 bg-gradient-to-r from-yellow-400 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                            AIM Platform
+                        </div>
+                        <div class="text-4xl font-bold mb-2 text-gray-800">
+                            Mobility & Logistics Edition
+                        </div>
+                        <div class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                            Connect Every Delivery with The Right Expert, Every Time<br>
+                            <span class="text-sm mt-2 block text-gray-500">3 Core Scenarios: On-Demand • B2B Logistics • Exception Handling</span>
+                        </div>
+                        
+                        <!-- Core Features -->
+                        <div class="grid grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="text-sm font-medium text-gray-700">AI Evelyn - Logistics Concierge</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">📊</div>
+                                <div class="text-sm font-medium text-gray-700">360° Delivery Profile</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <div class="text-sm font-medium text-gray-700">Expert Matching</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">👤</div>
+                                <div class="text-sm font-medium text-gray-700">Specialist Profiles</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="text-sm font-medium text-gray-700">AI Strategy Coach</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">📈</div>
+                                <div class="text-sm font-medium text-gray-700">Learning System</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">🔄</div>
+                                <div class="text-sm font-medium text-gray-700">Service Extension</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="text-sm font-medium text-gray-700">Continuous Evolution</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 border-2 border-purple-300 shadow-sm data-card">
+                                <div class="text-4xl mb-2">💰</div>
+                                <div class="text-sm font-medium text-gray-700">Value Maximization</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Core Values -->
+                        <div class="grid grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+                            <div class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-6 text-white shadow-lg">
+                                <div class="text-5xl font-black mb-2">Up to-85%</div>
+                                <div class="text-lg opacity-90">Planning Time</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
+                                <div class="text-5xl font-black mb-2">Up to-60%</div>
+                                <div class="text-lg opacity-90">Response Time</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl p-6 text-white shadow-lg">
+                                <div class="text-5xl font-black mb-2">Up-To~96%</div>
+                                <div class="text-lg opacity-90">On-Time Delivery Rate</div>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onclick="SceneManager.switchTo('caseSelect')"
+                            class="px-12 py-4 bg-gradient-to-r from-yellow-500 to-purple-600 text-white text-xl font-bold rounded-full hover:from-yellow-600 hover:to-purple-700 transition-all transform hover:scale-105 shadow-2xl"
+                        >
+                            Start Logistics Demo →
+                        </button>
+                        <div class="mt-8 text-sm text-gray-500">
+                            ⚡ 3 Complete Logistics Journeys × Full Closed-Loop System
+                        </div>
+			<div class="mt-2 text-sm text-gray-500">
+			    <a href="logistics-reference.html" class="demo-button">
+                                  <span>*Supporting Reference▶️</span>
+                            </a>
+			</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 2: Case Selection
+        // ========================================
+        
+        function CaseSelectScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-12 fade-in-up">
+                        <div class="text-5xl font-bold mb-4 text-gray-800">🚚 Select Mobility & Logistics Scenario</div>
+                        <div class="text-xl text-gray-600">Each scenario demonstrates complete Delivery Journey: Dialogue → Analysis → Matching → Coaching → Service Extension</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-6 mb-8">
+                        ${Object.entries(CASE_STUDIES).map(([key, caseData]) => `
+                            <div class="case-card bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-sm"
+                                 onclick="SceneManager.currentCase = '${key}'; SceneManager.conversationCompleted = false; SceneManager.switchTo('conversation')">
+                                <div class="flex items-center gap-6">
+                                    <div class="text-7xl">${caseData.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="text-2xl font-bold mb-2 text-gray-800">${caseData.title}</div>
+                                        <div class="text-sm text-gray-600 mb-3">
+                                            <strong>Client:</strong> ${caseData.customer.basic.name} | 
+                                            <strong>Profile:</strong> ${caseData.customer.basic.occupation}
+                                        </div>
+                                        <div class="flex gap-2 flex-wrap">
+                                            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">🎯 AI Matching</span>
+                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs">🤖 Strategy Coach</span>
+                                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs">📈 Learning Loop</span>
+                                            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">🔄 Service Extension</span>
+                                        </div>
+					<div class="mt-2 text-xs text-gray-400">
+						*All customer profiles, assets, and figures shown in this demo are simulated for demonstration purposes only.
+					</div>
+                                    </div>
+                                    <div class="px-6 py-3 bg-gradient-to-r from-yellow-500 to-purple-600 text-white rounded-full text-lg font-bold shadow-md">
+                                        Start Demo →
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="text-center">
+                        <button 
+                            onclick="SceneManager.switchTo('intro')"
+                            class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 text-lg font-bold rounded-full hover:bg-purple-50 transition-all shadow-sm"
+                        >
+                            ← Back to Home
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 3: AI Conversation (Evelyn) with Real-time Analysis Panel
+        // ========================================
+        
+        function ConversationScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            SceneManager.conversationPaused = false;
+            SceneManager.conversationCompleted = false;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-4xl font-bold mb-2 text-gray-800">🤖 Evelyn - AI Logistics Concierge</div>
+                        <div class="text-gray-600">Understanding delivery needs through natural conversation with real-time analysis</div>
+                    </div>
+                    
+                    <div class="conversation-grid grid grid-cols-2 gap-6 mb-8">
+                        <!-- Left: Conversation -->
+                        <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg">
+                            <div class="text-xl font-bold mb-4 text-gray-800">💬 Conversation</div>
+                            <div id="chatContainer" class="space-y-4" style="min-height: 500px; max-height: 500px; overflow-y: auto;">
+                                <!-- Conversation will be dynamically generated -->
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Real-time Analysis Panel -->
+                        <div class="analysis-panel rounded-2xl p-8 shadow-lg">
+                            <div class="text-xl font-bold mb-4 text-gray-800">🔍 Real-time Internal Analysis</div>
+                            <div id="analysisContainer" class="space-y-4" style="min-height: 500px; max-height: 500px; overflow-y: auto;">
+                                <div class="text-gray-500 italic text-center py-20">
+                                    Analysis will appear as conversation progresses...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center gap-4">
+                        <button id="pauseBtn" onclick="SceneManager.conversationPaused = !SceneManager.conversationPaused; this.textContent = SceneManager.conversationPaused ? '▶️ Resume' : '⏸️ Pause'" 
+                                class="px-8 py-3 bg-yellow-500 text-white rounded-full font-bold hover:bg-yellow-600 transition-all shadow-md">
+                            ⏸️ Pause
+                        </button>
+                        <button id="nextBtn" onclick="SceneManager.switchTo('processing')" 
+                                class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-purple-600 text-white rounded-full font-bold hover:from-yellow-600 hover:to-purple-700 transition-all shadow-md">
+                            Next: View Analysis →
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const chatContainer = document.getElementById('chatContainer');
+            const analysisContainer = document.getElementById('analysisContainer');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            async function showConversation() {
+                // Clear initial placeholder
+                analysisContainer.innerHTML = '';
+                
+                for (let i = 0; i < caseData.conversation.length; i++) {
+                    while (SceneManager.conversationPaused) {
+                        await delay(100);
+                    }
+                    
+                    const msg = caseData.conversation[i];
+                    
+                    if (msg.bot) {
+                        await delay(1600);
+                        const botDiv = document.createElement('div');
+                        botDiv.className = 'flex items-start gap-3 slide-in-right';
+                        botDiv.innerHTML = `
+                            <div class="text-3xl">🤖</div>
+                            <div class="bg-purple-100 border-2 border-purple-400 rounded-2xl rounded-tl-none px-6 py-3 max-w-xl text-gray-800 shadow-sm">
+                                ${msg.bot}
+                            </div>
+                        `;
+                        chatContainer.appendChild(botDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+                    
+                    if (msg.user) {
+                        await delay(2000);
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'flex items-start gap-3 justify-end slide-in-right';
+                        userDiv.innerHTML = `
+                            <div class="bg-yellow-100 border-2 border-yellow-400 rounded-2xl rounded-tr-none px-6 py-3 max-w-xl text-gray-800 shadow-sm">
+                                ${msg.user}
+                            </div>
+                            <div class="text-3xl">👤</div>
+                        `;
+                        chatContainer.appendChild(userDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                        // Update analysis panel if analysis data exists
+                        if (msg.analysis) {
+                            await delay(1000);
+                            const analysisDiv = document.createElement('div');
+                            analysisDiv.className = 'analysis-item bg-white rounded-xl p-4 border-2 border-purple-300 shadow-sm';
+                            analysisDiv.style.animationDelay = '0.2s';
+                            analysisDiv.innerHTML = `
+                                <div class="text-sm font-bold text-purple-700 mb-3">After message ${i + 1}:</div>
+                                
+                                ${msg.analysis.needs ? `
+                                    <div class="mb-3">
+                                        <div class="text-xs font-semibold text-gray-600 mb-1">🎯 Detected Needs</div>
+                                        <div class="space-y-1">
+                                            ${msg.analysis.needs.map(need => `
+                                                <div class="text-xs bg-green-50 border border-green-300 rounded px-2 py-1 text-gray-700">• ${need}</div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${msg.analysis.signals ? `
+                                    <div class="mb-3">
+                                        <div class="text-xs font-semibold text-gray-600 mb-1">🔍 Key Signals</div>
+                                        <div class="space-y-1">
+                                            ${msg.analysis.signals.map(signal => `
+                                                <div class="text-xs bg-purple-50 border border-purple-300 rounded px-2 py-1 text-gray-700">• ${signal}</div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${msg.analysis.routing ? `
+                                    <div class="mb-3">
+                                        <div class="text-xs font-semibold text-gray-600 mb-1">🎯 Early Routing Hint</div>
+                                        <div class="text-xs bg-indigo-50 border border-indigo-300 rounded px-2 py-1 text-gray-700">${msg.analysis.routing}</div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${msg.analysis.skills ? `
+                                    <div>
+                                        <div class="text-xs font-semibold text-gray-600 mb-1">💪 Relevant Expert Skills</div>
+                                        <div class="space-y-1">
+                                            ${msg.analysis.skills.map(skill => `
+                                                <div class="text-xs bg-yellow-50 border border-yellow-300 rounded px-2 py-1 text-gray-700">• ${skill}</div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            `;
+                            analysisContainer.appendChild(analysisDiv);
+                            analysisContainer.scrollTop = analysisContainer.scrollHeight;
+                        }
+                    }
+                }
+                
+                // Conversation completed
+                SceneManager.conversationCompleted = true;
+                document.getElementById('pauseBtn').style.display = 'none';
+            }
+            
+            showConversation();
+        }
+        
+        // ========================================
+        // 🎥 Scene 4: AI Processing
+        // ========================================
+        
+        function ProcessingScene(container) {
+            container.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center">
+                    <div class="text-center fade-in-up">
+                        <div class="text-6xl mb-6 rotate-animation">🧠</div>
+                        <div class="text-4xl font-bold mb-4 text-gray-800">AIM Platform - Deep Delivery Analysis</div>
+                        <div class="text-gray-600 mb-8">Analyzing urgency, requirements, personality traits, and logistics needs</div>
+                        <div class="flex justify-center gap-2">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full pulse-animation" style="animation-delay: 0s;"></div>
+                            <div class="w-3 h-3 bg-purple-600 rounded-full pulse-animation" style="animation-delay: 0.2s;"></div>
+                            <div class="w-3 h-3 bg-indigo-600 rounded-full pulse-animation" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => SceneManager.switchTo('cdp'), 2000);
+        }
+        
+        // ========================================
+        // 🎥 Scene 5: 360° CDP
+        // ========================================
+        
+        function CDPScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const customer = caseData.customer;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2 text-gray-800">📊 AIM Platform - 360° Client Data Platform</div>
+                        <div class="text-xl text-gray-600">AI-constructed comprehensive client profile</div>
+                    </div>
+                    
+                    <!-- Customer Basic Info Card -->
+                    <div class="bg-gradient-to-r from-yellow-500 to-purple-600 rounded-3xl p-8 mb-8 fade-in-up shadow-xl">
+                        <div class="flex items-center gap-8">
+                            <div class="text-9xl">👤</div>
+                            <div class="flex-1 text-white">
+                                <div class="text-4xl font-bold mb-2">${customer.basic.name}</div>
+                                <div class="text-2xl mb-4 opacity-90">${customer.basic.occupation}</div>
+                                <div class="grid grid-cols-2 gap-4 text-lg">
+                                    <div><strong>Age:</strong> ${customer.basic.age} years</div>
+                                    <div><strong>Location:</strong> ${customer.basic.location}</div>
+                                    <div><strong>Income:</strong> ${customer.basic.income}</div>
+                                    ${customer.basic.company ? `<div><strong>Company:</strong> ${customer.basic.company}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Detailed Analysis -->
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <!-- Personality Traits -->
+                        <div class="bg-white rounded-2xl p-6 border-2 border-purple-300 shadow-lg data-card">
+                            <div class="text-2xl font-bold mb-4 text-gray-800">🧠 Personality Analysis</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1 text-gray-700">
+                                        <span>Decision Style</span>
+                                        <span class="font-bold text-purple-600">${customer.personality.decisionStyle}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1 text-gray-700">
+                                        <span>Communication Preference</span>
+                                        <span class="font-bold text-purple-600">${customer.personality.communicationStyle}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1 text-gray-700">
+                                        <span>Risk Tolerance</span>
+                                        <span class="font-bold text-purple-600">${customer.personality.riskTolerance}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1 text-gray-700">
+                                        <span>Trust Building</span>
+                                        <span class="font-bold text-purple-600">${customer.personality.trustBuilding}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Needs Analysis -->
+                        <div class="bg-white rounded-2xl p-6 border-2 border-purple-300 shadow-lg data-card">
+                            <div class="text-2xl font-bold mb-4 text-gray-800">🎯 Needs Structure</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-sm text-gray-600 mb-2">Primary Needs</div>
+                                    ${customer.needs.primary.map(need => `
+                                        <div class="bg-green-100 border border-green-400 rounded-lg p-2 mb-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-800">${need.text}</span>
+                                                <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">${need.confidence}%</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600 mb-2">Secondary Needs</div>
+                                    ${customer.needs.secondary.slice(0, 2).map(need => `
+                                        <div class="bg-purple-100 border border-purple-400 rounded-lg p-2 mb-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-800">${need.text}</span>
+                                                <span class="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">${need.confidence}%</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Behavioral Prediction -->
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">🔮 AI Behavioral Prediction</div>
+                        <div class="grid grid-cols-4 gap-6">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black mb-2">${customer.behavioral.conversionProbability}%</div>
+                                <div class="text-sm opacity-90">Predicted Conversion Rate</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-lg font-bold mb-2">${customer.behavioral.estimatedValue}</div>
+                                <div class="text-sm opacity-90">Estimated Value</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-2xl font-bold mb-2">${customer.behavioral.timeToDecision}</div>
+                                <div class="text-sm opacity-90">Expected Decision Time</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl mb-2">⭐</div>
+                                <div class="text-sm opacity-90">${customer.behavioral.conversionProbability >= 85 ? 'High Priority' : 'Important'} Lead</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('conversation')"
+                                class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 rounded-full text-lg font-bold hover:bg-purple-50 transition-all shadow-sm">
+                            ← Back to Conversation
+                        </button>
+                        <button onclick="SceneManager.switchTo('matching')"
+                                class="px-12 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full text-xl font-bold glow-animation hover:from-green-600 hover:to-emerald-600 transition-all shadow-xl">
+                            Start Expert Matching →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Utility Function
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // ========================================
+        // 🎥 Scene 6: Smart Matching Results
+        // ========================================
+        
+        function MatchingScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agent = caseData.bestAgent;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2 text-gray-800">🎯 AIM Platform - Intelligent Expert Matching</div>
+                        <div class="text-xl text-gray-600">Precision matching based on 89 dimensions</div>
+                    </div>
+                    
+                    <!-- Best Match Display -->
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-3xl p-8 mb-8 fade-in-up glow-animation shadow-xl">
+                        <div class="text-center mb-6">
+                            <div class="text-2xl font-bold mb-2 text-white">🏆 Best Match</div>
+                            <div class="matching-score">${Math.round(agent.score)}</div>
+                            <div class="text-xl opacity-90 text-white">Matching Score</div>
+                        </div>
+                        <div class="flex items-center gap-8 bg-white/20 backdrop-blur-sm rounded-2xl p-8">
+                            <div class="text-8xl">${agent.photo}</div>
+                            <div class="flex-1 text-white">
+                                <div class="text-4xl font-bold mb-2">${agent.name}</div>
+                                <div class="text-2xl mb-4 opacity-90">${agent.title}</div>
+                                <div class="text-lg opacity-90">Experience: ${agent.experience} years</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Match Reason Analysis -->
+                    <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg mb-8">
+                        <div class="text-3xl font-bold mb-6 text-gray-800">💡 Why ${agent.name}?</div>
+                        <div class="space-y-4">
+                            ${agent.matchReasons.map(reason => `
+                                <div class="bg-gradient-to-r from-purple-100 to-indigo-100 border-2 border-purple-400 rounded-xl p-6 shadow-sm">
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="text-3xl font-black text-purple-600">${reason.score}</div>
+                                        <div class="flex-1">
+                                            <div class="text-xl font-bold mb-1 text-gray-800">${reason.category}</div>
+                                            <div class="text-sm text-gray-700">${reason.details}</div>
+                                        </div>
+                                        <div class="text-2xl text-green-600">✓</div>
+                                    </div>
+                                    <div class="bg-white/50 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-yellow-500 to-purple-600 rounded-full h-2" 
+                                             style="width: ${(reason.score / 40) * 100}%;"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('cdp')"
+                                class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 rounded-full text-lg font-bold hover:bg-purple-50 transition-all shadow-sm">
+                            ← Back to CDP
+                        </button>
+                        <button onclick="SceneManager.switchTo('agentProfile')"
+                                class="px-12 py-4 bg-gradient-to-r from-yellow-500 to-purple-600 text-white rounded-full text-xl font-bold hover:from-yellow-600 hover:to-purple-700 transition-all shadow-xl">
+                            View Expert Profile →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 7: Complete Agent Profile
+        // ========================================
+        
+        function AgentProfileScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agentId = caseData.bestAgent.id;
+            const agent = AGENT_PROFILES[agentId];
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2 text-gray-800">👤 AIM Platform - Complete Expert Profile</div>
+                        <div class="text-xl text-gray-600">Deep understanding of each expert's capabilities and personality</div>
+                    </div>
+                    
+                    <!-- Basic Info -->
+                    <div class="bg-gradient-to-r from-yellow-500 to-purple-600 rounded-3xl p-8 mb-8 fade-in-up shadow-xl">
+                        <div class="flex items-center gap-8">
+                            <div class="text-9xl">${agent.photo}</div>
+                            <div class="flex-1 text-white">
+                                <div class="text-5xl font-bold mb-2">${agent.name}</div>
+                                <div class="text-3xl mb-4 opacity-90">${agent.title}</div>
+                                <div class="grid grid-cols-2 gap-4 text-lg">
+                                    <div><strong>Experience:</strong> ${agent.experience} years</div>
+                                    <div><strong>Age:</strong> ${agent.age} years</div>
+                                    <div><strong>Education:</strong> ${agent.education}</div>
+                                    <div><strong>Certifications:</strong> ${agent.certifications.join(', ')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Skills & Performance -->
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-2xl p-6 border-2 border-purple-300 shadow-lg">
+                            <div class="text-2xl font-bold mb-4 text-gray-800">💪 Professional Skills</div>
+                            <div class="space-y-3">
+                                ${Object.entries(agent.skills).slice(0, 6).map(([skill, level]) => {
+                                    const skillNames = {
+                                        urgentDispatch: 'Urgent Dispatch',
+                                        routeOptimization: 'Route Optimization',
+                                        realTimeCoordination: 'Real-time Coordination',
+                                        fastDecisionMaking: 'Fast Decision Making',
+                                        pressureHandling: 'Pressure Handling',
+                                        timeManagement: 'Time Management',
+                                        b2bRelationshipManagement: 'B2B Relationship Management',
+                                        slaCompliance: 'SLA Compliance',
+                                        processCustomization: 'Process Customization',
+                                        corporateNegotiation: 'Corporate Negotiation',
+                                        dataAnalysis: 'Data Analysis',
+                                        longTermPlanning: 'Long-term Planning',
+                                        crisisManagement: 'Crisis Management',
+                                        emotionalIntelligence: 'Emotional Intelligence',
+                                        problemSolving: 'Problem Solving',
+                                        crossFunctionalCoordination: 'Cross-functional Coordination',
+                                        serviceRecovery: 'Service Recovery',
+                                        conflictResolution: 'Conflict Resolution'
+                                    };
+                                    return `
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1 text-gray-700">
+                                                <span>${skillNames[skill] || skill}</span>
+                                                <span class="font-bold text-purple-600">${level}/10</span>
+                                            </div>
+                                            <div class="bg-purple-100 rounded-full h-2">
+                                                <div class="bg-gradient-to-r from-yellow-500 to-purple-600 rounded-full h-2" 
+                                                     style="width: ${level * 10}%;"></div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-2xl p-6 border-2 border-purple-300 shadow-lg">
+                            <div class="text-2xl font-bold mb-4 text-gray-800">📊 Historical Performance</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                ${agent.performance.conversionRate ? `
+                                    <div class="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-4 text-center border-2 border-green-300">
+                                        <div class="text-3xl font-black mb-1 text-green-700">${agent.performance.conversionRate}%</div>
+                                        <div class="text-xs text-gray-700">Conversion Rate</div>
+                                    </div>
+                                ` : ''}
+                                <div class="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl p-4 text-center border-2 border-purple-300">
+                                    <div class="text-3xl font-black mb-1 text-purple-700">${agent.performance.customerSatisfaction}</div>
+                                    <div class="text-xs text-gray-700">Customer Satisfaction</div>
+                                </div>
+                                ${agent.performance.onTimeDeliveryRate ? `
+                                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-xl p-4 text-center col-span-2 border-2 border-yellow-300">
+                                        <div class="text-2xl font-black mb-1 text-yellow-700">${agent.performance.onTimeDeliveryRate}%</div>
+                                        <div class="text-xs text-gray-700">On-Time Delivery Rate</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.avgResponseTime ? `
+                                    <div class="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl p-4 text-center col-span-2 border-2 border-blue-300">
+                                        <div class="text-2xl font-black mb-1 text-blue-700">${agent.performance.avgResponseTime}s</div>
+                                        <div class="text-xs text-gray-700">Avg Response Time</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.slaComplianceRate ? `
+                                    <div class="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-4 text-center col-span-2 border-2 border-green-300">
+                                        <div class="text-2xl font-black mb-1 text-green-700">${agent.performance.slaComplianceRate}%</div>
+                                        <div class="text-xs text-gray-700">SLA Compliance Rate</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.clientRetentionRate ? `
+                                    <div class="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-4 text-center col-span-2 border-2 border-purple-300">
+                                        <div class="text-2xl font-black mb-1 text-purple-700">${agent.performance.clientRetentionRate}%</div>
+                                        <div class="text-xs text-gray-700">Client Retention Rate</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.avgRecoveryTime ? `
+                                    <div class="bg-gradient-to-br from-orange-100 to-red-100 rounded-xl p-4 text-center border-2 border-orange-300">
+                                        <div class="text-2xl font-black mb-1 text-orange-700">${agent.performance.avgRecoveryTime}m</div>
+                                        <div class="text-xs text-gray-700">Avg Recovery Time</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.retentionRateAfterIssue ? `
+                                    <div class="bg-gradient-to-br from-pink-100 to-rose-100 rounded-xl p-4 text-center border-2 border-pink-300">
+                                        <div class="text-2xl font-black mb-1 text-pink-700">${agent.performance.retentionRateAfterIssue}%</div>
+                                        <div class="text-xs text-gray-700">Retention After Issue</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.issueResolutionRate ? `
+                                    <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl p-4 text-center col-span-2 border-2 border-indigo-300">
+                                        <div class="text-2xl font-black mb-1 text-indigo-700">${agent.performance.issueResolutionRate}%</div>
+                                        <div class="text-xs text-gray-700">Issue Resolution Rate</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Learning Data -->
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">📈 AI Learning Data</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.totalMatches}</div>
+                                <div class="text-sm">Total Matches</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.successfulMatches}</div>
+                                <div class="text-sm">Successful Matches</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.accuracyRate}%</div>
+                                <div class="text-sm">Accuracy Rate</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black text-yellow-300 mb-2">${agent.learningData.improvementTrend}</div>
+                                <div class="text-sm">Improvement Trend</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('matching')"
+                                class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 rounded-full text-lg font-bold hover:bg-purple-50 transition-all shadow-sm">
+                            ← Back to Matching
+                        </button>
+                        <button onclick="SceneManager.switchTo('aiCoaching')"
+                                class="px-12 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full text-xl font-bold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-xl">
+                            View AI Strategy Coach →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 8: AI Sales Coach
+        // ========================================
+        
+        function AICoachingScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const caseType = SceneManager.currentCase;
+            
+            let recommendedApproaches = [];
+            let avoidThese = [];
+            let salesPath = [];
+            
+            if (caseType === 'ondemand') {
+                recommendedApproaches = [
+                    '• Prioritize distance and availability for fast dispatch',
+                    '• Simplify communication - confirm key information only',
+                    '• Provide real-time status updates and accurate ETA',
+                    '• Execute immediately with minimal back-and-forth'
+                ];
+                avoidThese = [
+                    '• Don\'t ask unnecessary details that slow down dispatch',
+                    '• Avoid manual route adjustments - use system optimization',
+                    '• Don\'t over-communicate - brief updates are better',
+                    '• Never miss ETA commitments'
+                ];
+                salesPath = [
+                    { stage: 'Initial Request (0-2 min)', action: 'Fast intake of pickup/delivery locations and urgency level' },
+                    { stage: 'Dispatch Assignment (2-5 min)', action: 'Match with nearest available courier, confirm acceptance' },
+                    { stage: 'Pickup Phase (5-20 min)', action: 'Real-time tracking, ETA updates, confirm pickup completion' },
+                    { stage: 'Delivery Phase (20-45 min)', action: 'Continue tracking, handle any route adjustments, confirm delivery' },
+                    { stage: 'Post-Delivery (45+ min)', action: 'Delivery confirmation, optional rating request, identify upsell opportunity' }
+                ];
+            } else if (caseType === 'b2b') {
+                recommendedApproaches = [
+                    '• First confirm service standards and exception handling procedures',
+                    '• Use data and historical records to build trust',
+                    '• Provide predictable, documented execution plans',
+                    '• Demonstrate SLA compliance capabilities upfront'
+                ];
+                avoidThese = [
+                    '• Don\'t make last-minute process changes without approval',
+                    '• Avoid vague commitments - be specific and documented',
+                    '• Don\'t skip the trial/pilot phase for large contracts',
+                    '• Never overpromise on delivery times or SLA targets'
+                ];
+                salesPath = [
+                    { stage: '1st Meeting (Week 1)', action: 'Understand current pain points, volume, SLA requirements, present capabilities' },
+                    { stage: 'Proposal Phase (Week 1-2)', action: 'Detailed service plan, pricing structure, SLA terms, trial period offer' },
+                    { stage: 'Trial Period (Week 2-3)', action: 'Execute pilot deliveries, demonstrate tracking dashboard, collect feedback data' },
+                    { stage: 'Contract Negotiation (Week 3-4)', action: 'Present trial results, finalize terms, volume discounts, dedicated support' },
+                    { stage: 'Onboarding (Week 4+)', action: 'Process integration, team training, regular review meetings, continuous optimization' }
+                ];
+            } else if (caseType === 'exceptions') {
+                recommendedApproaches = [
+                    '• First calm emotions and acknowledge the problem',
+                    '• Clearly explain the recovery plan with specific timeline',
+                    '• Proactively provide progress updates without being asked',
+                    '• Offer appropriate compensation to restore trust'
+                ];
+                avoidThese = [
+                    '• Don\'t deflect blame or make excuses',
+                    '• Avoid long periods without updates',
+                    '• Don\'t promise what you can\'t deliver',
+                    '• Never argue with an upset client - focus on solution'
+                ];
+                salesPath = [
+                    { stage: 'Initial Contact (0-5 min)', action: 'Acknowledge urgency, apologize, gather details, escalate immediately' },
+                    { stage: 'Assessment (5-15 min)', action: 'Identify root cause, determine recovery options, prepare action plan' },
+                    { stage: 'Action Phase (15-60 min)', action: 'Execute recovery, provide frequent updates, direct communication with client' },
+                    { stage: 'Resolution (60+ min)', action: 'Confirm problem solved, discuss compensation, document lessons learned' },
+                    { stage: 'Follow-up (1-7 days later)', action: 'Personal follow-up call, ensure satisfaction, offer premium support upgrade' }
+                ];
+            }
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2 text-gray-800">🤖 AIM Platform - AI Strategy Coach</div>
+                        <div class="text-xl text-gray-600">Personalized approach strategies and practical recommendations</div>
+                    </div>
+                    
+                    <!-- Communication Strategy -->
+                    <div class="bg-gradient-to-r from-yellow-500 to-purple-600 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">💬 Communication Strategy</div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6">
+                                <div class="text-xl font-bold mb-3 text-white">✅ Recommended Approaches</div>
+                                <ul class="space-y-2 text-sm text-white">
+                                    ${recommendedApproaches.map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6">
+                                <div class="text-xl font-bold mb-3 text-white">❌ Avoid These</div>
+                                <ul class="space-y-2 text-sm text-white">
+                                    ${avoidThese.map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sales Path Planning -->
+                    <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg mb-8">
+                        <div class="text-3xl font-bold mb-6 text-gray-800">🎯 Engagement Path Planning</div>
+                        <div class="space-y-4">
+                            ${salesPath.map((step, index) => `
+                                <div class="timeline-item">
+                                    <div class="font-bold mb-1 text-gray-800">${step.stage}</div>
+                                    <div class="text-sm text-gray-600">${step.action}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('agentProfile')"
+                                class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 rounded-full text-lg font-bold hover:bg-purple-50 transition-all shadow-sm">
+                            ← Back to Expert Profile
+                        </button>
+                        <button onclick="SceneManager.switchTo('feedback')"
+                                class="px-12 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full text-xl font-bold hover:from-green-600 hover:to-emerald-600 transition-all shadow-xl">
+                            Simulate Post-Delivery Feedback →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 9: Learning Feedback System
+        // ========================================
+        
+        function FeedbackScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agent = AGENT_PROFILES[caseData.bestAgent.id];
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2 text-gray-800">📈 AIM Platform - Learning Feedback System</div>
+                        <div class="text-xl text-gray-600">Track matching results, enable continuous AI evolution</div>
+                    </div>
+                    
+                    <!-- Timeline -->
+                    <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg mb-8">
+                        <div class="text-2xl font-bold mb-6 text-gray-800">⏱️ Matching Tracking Timeline</div>
+                        <div class="space-y-6">
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1 text-gray-800">2026-02-12 10:15</div>
+                                <div class="text-gray-600">AI completed delivery analysis</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1 text-gray-800">2026-02-12 10:17</div>
+                                <div class="text-gray-600">Matched with ${agent.name} (Score: ${caseData.bestAgent.score})</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1 text-gray-800">2026-02-12 10:18</div>
+                                <div class="text-gray-600">${agent.name} received delivery request and confirmed assignment</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1 text-gray-800">2026-02-12 11:00</div>
+                                <div class="text-gray-600">Service completed successfully</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1 text-gray-800">2026-02-12 11:05</div>
+                                <div class="text-green-600 font-bold">✅ Delivery Completed!</div>
+                            </div>
+                            <div class="timeline-item glow-animation">
+                                <div class="font-bold mb-1 text-purple-600">2026-02-12 11:10 (Now)</div>
+                                <div class="text-purple-600">📊 Collecting feedback data...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Three-Party Feedback -->
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white rounded-2xl p-6 border-2 border-purple-300 shadow-lg">
+                            <div class="text-2xl font-bold mb-4 text-green-600">✅ Delivery Result</div>
+                            <div class="space-y-4">
+                                <div class="bg-green-100 border-2 border-green-400 rounded-lg p-4">
+                                    <div class="text-sm text-gray-600 mb-1">Status</div>
+                                    <div class="text-2xl font-bold text-gray-800">Completed On-Time</div>
+                                </div>
+                                <div class="bg-purple-50 rounded-lg p-4">
+                                    <div class="text-sm text-gray-600 mb-1">Transaction Value</div>
+                                    <div class="text-xl font-bold text-gray-800">${caseData.customer.behavioral.estimatedValue.split('(')[0].trim()}</div>
+                                </div>
+                                <div class="bg-purple-50 rounded-lg p-4">
+                                    <div class="text-sm text-gray-600 mb-1">Service Time</div>
+                                    <div class="text-xl font-bold text-gray-800">${caseData.customer.behavioral.timeToDecision}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-2xl p-6 border-2 border-purple-300 shadow-lg">
+                            <div class="text-2xl font-bold mb-4 text-purple-600">😊 Client Feedback</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-sm mb-2 text-gray-700">Overall Satisfaction</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold text-gray-800">9</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-sm mb-2 text-gray-700">Expert Match Quality</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="10" disabled>
+                                        <span class="text-2xl font-bold text-gray-800">10</span>
+                                    </div>
+                                </div>
+                                <div class="bg-green-100 border-2 border-green-400 rounded-lg p-3 text-center">
+                                    <div class="text-sm text-gray-700">Would Use Again</div>
+                                    <div class="text-2xl font-bold text-gray-800">✅ Yes</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-2xl p-6 border-2 border-purple-300 shadow-lg">
+                            <div class="text-2xl font-bold mb-4 text-indigo-600">👨‍💼 Expert Feedback</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-sm mb-2 text-gray-700">Match Accuracy</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold text-gray-800">9</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-sm mb-2 text-gray-700">AI Guidance Usefulness</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold text-gray-800">9</span>
+                                    </div>
+                                </div>
+                                <div class="bg-purple-50 rounded-lg p-3">
+                                    <div class="text-xs italic text-gray-700">
+                                        "Client requirements were clearly communicated, urgency level assessment was spot-on, and routing suggestions were excellent"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Learning Analysis -->
+                    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">🤖 AI Learning Analysis</div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <div class="text-xl font-bold mb-4 text-white">✅ What Worked</div>
+                                <div class="space-y-2">
+                                    <div class="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+                                        <div class="font-bold mb-1 text-white">Urgency Detection</div>
+                                        <div class="text-sm text-white opacity-90">Correctly identified time-sensitive requirements and matched with fast-response specialist</div>
+                                    </div>
+                                    <div class="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+                                        <div class="font-bold mb-1 text-white">Communication Style Match</div>
+                                        <div class="text-sm text-white opacity-90">Successfully paired direct communicator with action-oriented coordinator</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-xl font-bold mb-4 text-white">📝 Areas for Improvement</div>
+                                <div class="space-y-2">
+                                    <div class="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+                                        <div class="font-bold mb-1 text-white">ETA Prediction</div>
+                                        <div class="text-sm text-white opacity-90">Actual delivery was 5 minutes faster than predicted - adjust model for peak efficiency scenarios</div>
+                                        <div class="text-xs text-yellow-300 mt-1">→ Update traffic prediction algorithm for this route type</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('aiCoaching')"
+                                class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 rounded-full text-lg font-bold hover:bg-purple-50 transition-all shadow-sm">
+                            ← Back to AI Coach
+                        </button>
+                        <button onclick="SceneManager.switchTo('crossProduct')"
+                                class="px-12 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full text-xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-xl">
+                            View Service Extension Strategy →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 10: Cross-Product Extension
+        // ========================================
+        
+        function CrossProductScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const opportunities = caseData.crossSellOpportunities;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2 text-gray-800">🔄 AIM Platform - Service Extension Intelligence</div>
+                        <div class="text-xl text-gray-600">One-time profiling, maximize lifetime value</div>
+                    </div>
+                    
+                    <!-- Unified Customer Profile -->
+                    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">📋 Unified Client Profile (Cross-Service Sharing)</div>
+                        <div class="text-center">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 inline-block">
+                                <div class="text-lg mb-2 text-white">Profile ID: <span class="font-mono">CLIENT_20260212_001</span></div>
+                                <div class="text-sm bg-green-500/30 border border-green-300 px-4 py-2 rounded-full inline-block text-white">
+                                    ✅ Accessible across all logistics services
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI-Identified Cross-Sell Opportunities -->
+                    <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg mb-8">
+                        <div class="text-3xl font-bold mb-6 text-gray-800">🎯 AI-Identified Service Extension Opportunities</div>
+                        <div class="space-y-4">
+                            ${opportunities.map((opp, index) => `
+                                <div class="bg-gradient-to-r from-purple-100 to-indigo-100 border-2 border-purple-400 rounded-xl p-6 shadow-sm">
+                                    <div class="flex items-center gap-6">
+                                        <div class="text-5xl">📦</div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-4 mb-2 flex-wrap">
+                                                <div class="text-2xl font-bold text-gray-800">${index + 1}. ${opp.product}</div>
+                                                <div class="px-4 py-1 bg-purple-200 border-2 border-purple-500 rounded-full text-sm text-purple-800">
+                                                    Probability: ${opp.probability}%
+                                                </div>
+                                                <div class="px-4 py-1 bg-indigo-200 border-2 border-indigo-500 rounded-full text-sm text-indigo-800">
+                                                    Timing: ${opp.timing}
+                                                </div>
+                                            </div>
+                                            <div class="text-sm text-gray-700 mb-3">${opp.reason}</div>
+                                            <button class="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full text-sm font-bold hover:from-green-600 hover:to-emerald-600 transition-all shadow-md">
+                                                Set Auto Reminder
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Customer Lifetime Value Prediction -->
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">💰 Client Lifetime Value Prediction (CLV)</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2 opacity-90">Current Value</div>
+                                <div class="text-3xl font-black mb-2">$250</div>
+                                <div class="text-xs opacity-75">Initial Delivery</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2 opacity-90">1-Month Forecast</div>
+                                <div class="text-3xl font-black mb-2">$3.5K</div>
+                                <div class="text-xs opacity-75">+Corporate Account</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2 opacity-90">6-Month Forecast</div>
+                                <div class="text-3xl font-black mb-2">$18K</div>
+                                <div class="text-xs opacity-75">+Premium Services</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2 opacity-90">1-Year Forecast</div>
+                                <div class="text-3xl font-black text-yellow-300 mb-2">$45K</div>
+                                <div class="text-xs opacity-75">Full Service Suite</div>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center text-lg">
+                            <span class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full text-white">
+                                📈 Potential lifetime value increased <span class="font-black text-yellow-300">180X</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('feedback')"
+                                class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 rounded-full text-lg font-bold hover:bg-purple-50 transition-all shadow-sm">
+                            ← Back to Learning Feedback
+                        </button>
+                        <button onclick="SceneManager.switchTo('learning')"
+                                class="px-12 py-4 bg-gradient-to-r from-yellow-500 to-purple-600 text-white rounded-full text-xl font-bold hover:from-yellow-600 hover:to-purple-700 transition-all shadow-xl">
+                            View AI Evolution →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 11: AI Learning & Evolution
+        // ========================================
+        
+        function LearningScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2 text-gray-800">🧠 AIM Platform - AI Learning & Evolution</div>
+                        <div class="text-xl text-gray-600">Data-driven, continuous optimization</div>
+                    </div>
+                    
+                    <!-- Learning Loop -->
+                    <div class="bg-gradient-to-r from-yellow-500 to-purple-600 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-center text-white">🔄 Complete Learning Loop</div>
+                        <div class="text-center text-xl leading-relaxed text-white">
+                            🤖 AI Dialogue → 📊 Delivery Analysis → 🎯 Expert Matching → 🚚 Service Delivery<br>
+                            ↓<br>
+                            📈 Collect Feedback → 🔍 Analyze & Learn → ⚡ Optimize Model → 🚀 Upgrade System
+                        </div>
+                        <div class="text-center mt-6">
+                            <span class="bg-white/20 backdrop-blur-sm border border-white/30 px-6 py-3 rounded-full text-white">
+                                🔁 Continuous loop, never-ending evolution
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Learning Statistics -->
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 mb-8 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">📊 Learning System Statistics</div>
+                        <div class="grid grid-cols-5 gap-4">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black mb-2">28,934</div>
+                                <div class="text-sm">Total Feedback</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black mb-2">84.7%</div>
+                                <div class="text-sm">Avg Accuracy</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black text-yellow-300 mb-2">+18.9%</div>
+                                <div class="text-sm">6-Month Improvement</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-2xl font-black mb-2">On-Demand</div>
+                                <div class="text-sm">Biggest Progress</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-4xl font-black mb-2">A+ Grade</div>
+                                <div class="text-sm">Data Quality</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Snowball Effect -->
+                    <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg mb-8">
+                        <div class="text-3xl font-bold mb-6 text-gray-800">⚡ Snowball Effect: Gets Stronger with Use</div>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">📊</div>
+                                <div class="text-2xl font-bold mb-2 text-gray-800">More Data</div>
+                                <div class="text-sm text-gray-600">Every delivery generates feedback</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">🎯</div>
+                                <div class="text-2xl font-bold mb-2 text-gray-800">Better Matches</div>
+                                <div class="text-sm text-gray-600">AI learns and optimizes</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">💰</div>
+                                <div class="text-2xl font-bold mb-2 text-gray-800">Higher Success</div>
+                                <div class="text-sm text-gray-600">Generates more data</div>
+                            </div>
+                        </div>
+                        <div class="mt-8 text-center text-xl">
+                            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-full inline-block font-bold shadow-lg">
+                                🔄 Positive loop, exponential growth
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('crossProduct')"
+                                class="px-8 py-3 bg-white border-2 border-purple-400 text-gray-700 rounded-full text-lg font-bold hover:bg-purple-50 transition-all shadow-sm">
+                            ← Back to Service Extension
+                        </button>
+                        <button onclick="SceneManager.switchTo('final')"
+                                class="px-12 py-4 bg-gradient-to-r from-yellow-500 to-purple-600 text-white rounded-full text-xl font-bold hover:from-yellow-600 hover:to-purple-700 transition-all shadow-xl">
+                            View Value Summary →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎥 Scene 12: Final Summary
+        // ========================================
+        
+        function FinalScene(container) {
+            container.innerHTML = `
+                <div class="max-w-6xl mx-auto py-12">
+                    <div class="text-center mb-12 fade-in-up">
+                        <div class="text-5xl font-bold mb-4 text-gray-800">✨ AIM Platform - Mobility & Logistics Edition</div>
+                        <div class="text-2xl text-gray-600">From Single Delivery to Lifetime Partnership - Complete Closed-Loop System</div>
+                    </div>
+                    
+                    <!-- Three Core Values -->
+                    <div class="grid grid-cols-3 gap-6 mb-12">
+                        <div class="data-card bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-8 text-center text-white shadow-xl">
+                            <div class="text-6xl mb-4">📈</div>
+                            <div class="text-5xl font-black mb-2">Up to-85%*</div>
+                            <div class="text-xl opacity-90">Planning Time</div>
+                        </div>
+                        <div class="data-card bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl p-8 text-center text-white shadow-xl">
+                            <div class="text-6xl mb-4">⚡</div>
+                            <div class="text-5xl font-black mb-2">Up to-60%*</div>
+                            <div class="text-xl opacity-90">Response Time</div>
+                        </div>
+                        <div class="data-card bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl p-8 text-center text-white shadow-xl">
+                            <div class="text-6xl mb-4">🚚</div>
+                            <div class="text-5xl font-black mb-2">Up-To~96%*</div>
+                            <div class="text-xl opacity-90">On-Time Delivery Rate</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Complete System Architecture -->
+                    <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg mb-12">
+                        <div class="text-3xl font-bold mb-6 text-center text-gray-800">🔄 Complete Logistics System</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl p-6 text-center border-2 border-purple-300">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="font-bold text-gray-800">AI Concierge</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl p-6 text-center border-2 border-purple-300">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <div class="font-bold text-gray-800">Smart Matching</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-6 text-center border-2 border-green-300">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="font-bold text-gray-800">AI Strategy Coach</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-xl p-6 text-center border-2 border-yellow-300">
+                                <div class="text-4xl mb-2">📈</div>
+                                <div class="font-bold text-gray-800">Learning Feedback</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl p-6 text-center border-2 border-indigo-300">
+                                <div class="text-4xl mb-2">🔄</div>
+                                <div class="font-bold text-gray-800">Service Extension</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-6 text-center border-2 border-purple-300">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="font-bold text-gray-800">AI Evolution</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-6 text-center border-2 border-green-300">
+                                <div class="text-4xl mb-2">♾️</div>
+                                <div class="font-bold text-gray-800">Infinite Loop</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-xl p-6 text-center border-2 border-yellow-300">
+                                <div class="text-4xl mb-2">💰</div>
+                                <div class="font-bold text-gray-800">Value Maximization</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ROI -->
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 mb-12 shadow-xl">
+                        <div class="text-3xl font-bold mb-6 text-white">💰 Return on Investment (ROI)</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2">Planning Time</div>
+                                <div class="text-4xl font-black">Up to-85%*</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2">Response Time</div>
+                                <div class="text-4xl font-black">Up to-60%*</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2">Operation Cost Reduction</div>
+                                <div class="text-4xl font-black">15-20%*</div>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 text-center text-white">
+                                <div class="text-sm mb-2">Payback Period</div>
+                                <div class="text-4xl font-black text-yellow-300">12-18 Months*</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA -->
+                    <div class="text-center">
+                        <div class="text-3xl font-bold mb-6 text-gray-800">🚀 Ready to Transform Your Logistics Business?</div>
+                        <div class="flex gap-4 justify-center mb-8 flex-wrap">
+                            <button onclick="SceneManager.switchTo('intro')"
+                                    class="px-12 py-4 bg-gradient-to-r from-yellow-500 to-purple-600 text-white text-xl font-bold rounded-full hover:scale-105 transition-all shadow-2xl">
+                                🔄 Restart Demo
+                            </button>
+                            <button onclick="SceneManager.switchTo('caseSelect')"
+                                    class="px-12 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xl font-bold rounded-full hover:scale-105 transition-all shadow-2xl">
+                                🚚 View Other Logistics Scenarios
+                            </button>
+                        </div>
+                        <div class="text-gray-600">
+                            ✨ AIM Platform - Making Every Delivery Perfect ✨
+                        </div>
+			<div class="mt-2 text-sm text-gray-500">
+			    <a href="logistics-reference.html" class="demo-button">
+                                  <span>*Supporting Reference▶️</span>
+                            </a>
+			</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========================================
+        // 🎬 Launch Application
+        // ========================================
+        
+        SceneManager.switchTo('intro');
+        
+    </script>
+
+
+</body></html>

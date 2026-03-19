@@ -1,0 +1,2186 @@
+<!DOCTYPE html><html lang="zh-TW"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIM Platform - Connect with the Right Person, Every Time</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); }
+        }
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
+        .fade-in-up { 
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        .slide-in-right { 
+            animation: slideInRight 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        .pulse-animation { animation: pulse 2s ease-in-out infinite; }
+        .rotate-animation { animation: rotate 2s linear infinite; }
+        .glow-animation { animation: glow 2s ease-in-out infinite; }
+        
+        .data-card {
+            transition: all 0.3s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .matching-score {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .case-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .case-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(255,255,255,0.2);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .feedback-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
+            outline: none;
+        }
+        .feedback-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .analysis-panel {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .analysis-item {
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        
+        .analysis-item.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            animation: scan 2s linear infinite;
+        }
+        
+        .confidence-bar {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .confidence-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            to { left: 100%; }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-cols-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+            .grid-cols-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .grid-cols-5 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .matching-score {
+                font-size: 3rem;
+            }
+            .analysis-panel {
+                position: relative;
+                top: 0;
+                margin-top: 20px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white">
+    
+    <div id="progressBar" class="progress-bar" style="display: none;">
+        <div id="progressBarFill" class="progress-bar-fill" style="width: 0%"></div>
+    </div>
+    
+    <div id="mainContainer" class="container mx-auto px-4 py-8"></div>
+
+    <script>
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        const CASE_STUDIES = {
+            insurance_family: {
+                title: "案例 1：保險 - 企業主家庭保障",
+                industry: "保險",
+                icon: "🏦",
+                customer: {
+                    basic: {
+                        name: "陳先生",
+                        age: 38,
+                        gender: "男",
+                        location: "台北市",
+                        occupation: "設計公司負責人",
+                        company: "創意設計工作室",
+                        employees: 8,
+                        income: "年收入 200-300 萬"
+                    },
+                    family: {
+                        status: "已婚",
+                        spouse: "有",
+                        children: 2,
+                        childrenAges: "5 歲、3 歲",
+                        parents: "父母健在",
+                        responsibility: "家庭經濟主要支柱"
+                    },
+                    personality: {
+                        decisionStyle: "理性分析型",
+                        communicationStyle: "開放健談",
+                        riskTolerance: "中等偏保守",
+                        trustBuilding: "需要數據支持",
+                        pacePreference: "不急躁，願意深入了解"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "家庭保障（壽險、醫療）", priority: "P0", confidence: 95 },
+                            { text: "子女教育金規劃", priority: "P1", confidence: 88 }
+                        ],
+                        secondary: [
+                            { text: "員工團體保險", priority: "P1", confidence: 92 },
+                            { text: "關鍵人物保險", priority: "P0", confidence: 90 }
+                        ],
+                        hidden: [
+                            { text: "退休金規劃", confidence: 70 },
+                            { text: "企業傳承規劃", confidence: 60 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 78,
+                        estimatedValue: "個人 8-12 萬/年 + 企業 15-25 萬/年",
+                        timeToDecision: "2-3 週",
+                        followUpStrategy: "提供詳細方案比較、數據支持、案例分享"
+                    }
+                },
+                conversation: [
+                    { bot: "您好！我是 AI 顧問小智。請問有什麼可以幫您？", user: "我想了解一下保險" },
+                    { bot: "好的！請問您是為了自己還是為了家人做保障規劃呢？", user: "主要是為了家人" },
+                    { bot: "明白了。方便請問您目前的家庭狀況嗎？", user: "已婚，有兩個小孩，一個 5 歲一個 3 歲" },
+                    { bot: "了解。請問您目前從事什麼行業呢？", user: "我自己開了一間設計公司，大概 8 個人" },
+                    { bot: "哇，您是老闆！那除了家庭保障，您有想過公司員工的保障嗎？", user: "有想過，但不知道從哪開始" },
+                    { bot: "沒問題！最後一個問題，您每年大概願意投入多少預算？", user: "個人的話 5-10 萬，公司的話要看方案" },
+                    { bot: "太好了！我已經充分了解您的需求。現在開始為您分析最適合的方案...", user: null }
+                ],
+                realtimeAnalysis: [
+                    { 
+                        trigger: 1,
+                        category: "基本資訊",
+                        icon: "📋",
+                        items: [
+                            { label: "家庭狀況", value: "已婚 + 2 子女", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "需求識別",
+                        icon: "🎯",
+                        items: [
+                            { label: "家庭保障", value: "高優先級", confidence: 95 },
+                            { label: "子女教育", value: "潛在需求", confidence: 75 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "客戶畫像",
+                        icon: "👤",
+                        items: [
+                            { label: "職業", value: "企業主", confidence: 100 },
+                            { label: "決策風格", value: "理性分析型", confidence: 88 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "延伸需求",
+                        icon: "💼",
+                        items: [
+                            { label: "員工保險", value: "有興趣", confidence: 92 },
+                            { label: "企業保障", value: "潛在需求", confidence: 85 }
+                        ]
+                    },
+                    {
+                        trigger: 5,
+                        category: "預算評估",
+                        icon: "💰",
+                        items: [
+                            { label: "個人預算", value: "5-10萬/年", confidence: 100 },
+                            { label: "購買意願", value: "高", confidence: 90 }
+                        ]
+                    },
+                    {
+                        trigger: 6,
+                        category: "配對準備",
+                        icon: "🤖",
+                        items: [
+                            { label: "資料完整度", value: "98%", confidence: 98 },
+                            { label: "配對信心", value: "極高", confidence: 95 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_001',
+                    name: '林雅婷',
+                    photo: '👩‍💼',
+                    title: '資深保險規劃師',
+                    experience: 12,
+                    score: 89.5,
+                    matchReasons: [
+                        { category: '專長匹配', score: 35, details: '擅長家庭保障、企業保險規劃' },
+                        { category: '客戶類型', score: 28, details: '擅長服務中高收入家庭和企業主' },
+                        { category: '性格匹配', score: 18, details: '親和耐心，適合謹慎決策型客戶' },
+                        { category: '歷史績效', score: 8.5, details: '成交率 85%、客戶滿意度 4.8/5.0' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: '危疾保險', probability: 85, timing: '3-6 個月後', reason: '有子女的家庭主通常會考慮重疾保障' },
+                    { product: '子女教育基金', probability: 78, timing: '6-12 個月後', reason: '客戶已表達對子女教育的重視' },
+                    { product: '退休金規劃', probability: 65, timing: '12-18 個月後', reason: '38 歲正是開始考慮退休規劃的年齡' }
+                ]
+            },
+            
+            realestate_investor: {
+                title: "案例 2：房地產 - 投資客戶",
+                industry: "房地產",
+                icon: "🏠",
+                customer: {
+                    basic: {
+                        name: "王先生",
+                        age: 45,
+                        gender: "男",
+                        location: "台中市",
+                        occupation: "科技業主管",
+                        company: "半導體公司",
+                        income: "年收入 300-500 萬"
+                    },
+                    family: {
+                        status: "已婚",
+                        children: 1,
+                        childrenAges: "15 歲"
+                    },
+                    personality: {
+                        decisionStyle: "快速果斷型",
+                        communicationStyle: "直接務實",
+                        riskTolerance: "中高",
+                        trustBuilding: "看重數據和投資報酬率",
+                        pacePreference: "快節奏，不喜歡拖延"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "投資型房產", priority: "P0", confidence: 98 },
+                            { text: "租金報酬率 > 4%", priority: "P0", confidence: 95 }
+                        ],
+                        secondary: [
+                            { text: "未來增值潛力", priority: "P1", confidence: 90 },
+                            { text: "交通便利地段", priority: "P1", confidence: 85 }
+                        ],
+                        hidden: [
+                            { text: "節稅規劃", confidence: 75 },
+                            { text: "資產配置優化", confidence: 70 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 72,
+                        estimatedValue: "2000-3000 萬",
+                        timeToDecision: "1-2 週",
+                        followUpStrategy: "提供投資分析報告、市場數據、ROI 計算"
+                    }
+                },
+                conversation: [
+                    { bot: "您好！我是 AI 房產顧問小智。請問想了解什麼類型的房產？", user: "我想找投資用的房子" },
+                    { bot: "好的！請問您預算大概多少？", user: "2000 到 3000 萬之間" },
+                    { bot: "了解。請問您比較重視租金報酬率還是未來增值潛力？", user: "租金報酬率優先，但增值也要有" },
+                    { bot: "明白。您希望的租金報酬率大概多少？", user: "至少 4% 以上" },
+                    { bot: "好的！請問地點有特別偏好嗎？", user: "交通要方便，最好近捷運站" },
+                    { bot: "完美！我已經了解您的需求，現在為您配對最適合的房產專家...", user: null }
+                ],
+                realtimeAnalysis: [
+                    { 
+                        trigger: 1,
+                        category: "客戶類型",
+                        icon: "🎯",
+                        items: [
+                            { label: "購買目的", value: "投資", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "預算評估",
+                        icon: "💰",
+                        items: [
+                            { label: "預算範圍", value: "2000-3000萬", confidence: 100 },
+                            { label: "資金實力", value: "高", confidence: 95 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "投資偏好",
+                        icon: "📊",
+                        items: [
+                            { label: "優先考量", value: "租金報酬率", confidence: 98 },
+                            { label: "風險偏好", value: "穩健", confidence: 85 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "需求細節",
+                        icon: "📋",
+                        items: [
+                            { label: "目標收益", value: "≥4%", confidence: 100 },
+                            { label: "決策風格", value: "數據導向", confidence: 92 }
+                        ]
+                    },
+                    {
+                        trigger: 5,
+                        category: "地點偏好",
+                        icon: "📍",
+                        items: [
+                            { label: "交通要求", value: "近捷運", confidence: 100 },
+                            { label: "地段要求", value: "精華區", confidence: 88 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_005',
+                    name: '張志豪',
+                    photo: '👨‍💼',
+                    title: '投資型房產專家',
+                    experience: 10,
+                    score: 92.3,
+                    matchReasons: [
+                        { category: '專長匹配', score: 38, details: '專精投資型房產、ROI 分析' },
+                        { category: '客戶類型', score: 30, details: '擅長服務高資產、快速決策型客戶' },
+                        { category: '性格匹配', score: 16, details: '效率導向，適合快節奏客戶' },
+                        { category: '歷史績效', score: 8.3, details: '成交率 72%、客戶滿意度 4.9/5.0' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: '第二間投資房產', probability: 80, timing: '6-12 個月後', reason: '投資客通常會持續擴大投資組合' },
+                    { product: '商用不動產', probability: 65, timing: '12-18 個月後', reason: '資產配置多元化需求' }
+                ]
+            },
+            
+            saas_manufacturing: {
+                title: "案例 3：B2B SaaS - 中型製造業",
+                industry: "企業軟體",
+                icon: "💼",
+                customer: {
+                    basic: {
+                        name: "李總經理",
+                        age: 52,
+                        gender: "男",
+                        location: "新竹市",
+                        occupation: "製造業總經理",
+                        company: "精密零件製造廠",
+                        employees: 150,
+                        income: "公司年營收 5 億"
+                    },
+                    personality: {
+                        decisionStyle: "謹慎保守型",
+                        communicationStyle: "正式專業",
+                        riskTolerance: "低",
+                        trustBuilding: "需要案例證明和試用期",
+                        pacePreference: "穩健，需要多次討論"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "生產管理系統（MES）", priority: "P0", confidence: 95 },
+                            { text: "庫存管理優化", priority: "P0", confidence: 92 }
+                        ],
+                        secondary: [
+                            { text: "品質追溯系統", priority: "P1", confidence: 88 },
+                            { text: "數據分析報表", priority: "P1", confidence: 85 }
+                        ],
+                        hidden: [
+                            { text: "自動化生產排程", confidence: 75 },
+                            { text: "供應鏈整合", confidence: 70 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 65,
+                        estimatedValue: "年合約 120-200 萬",
+                        timeToDecision: "4-6 週",
+                        followUpStrategy: "提供 POC、同業案例、分階段實施計畫"
+                    }
+                },
+                conversation: [
+                    { bot: "您好！我是 AI 企業顧問小智。請問貴公司目前遇到什麼管理挑戰？", user: "我們生產排程常常出問題，庫存也不好管理" },
+                    { bot: "了解。請問貴公司規模大概多大？", user: "大概 150 個員工，年營收 5 億左右" },
+                    { bot: "明白。請問目前有使用任何管理系統嗎？", user: "有用 ERP，但生產端還是用 Excel" },
+                    { bot: "了解痛點了。請問您希望多快導入新系統？", user: "不急，但要確保能解決問題" },
+                    { bot: "非常好！我會為您配對最適合的企業顧問...", user: null }
+                ],
+                realtimeAnalysis: [
+                    {
+                        trigger: 1,
+                        category: "痛點識別",
+                        icon: "⚠️",
+                        items: [
+                            { label: "生產排程", value: "痛點", confidence: 95 },
+                            { label: "庫存管理", value: "痛點", confidence: 92 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "公司規模",
+                        icon: "🏭",
+                        items: [
+                            { label: "員工數", value: "150人", confidence: 100 },
+                            { label: "公司規模", value: "中型企業", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "系統現況",
+                        icon: "💻",
+                        items: [
+                            { label: "現有系統", value: "ERP", confidence: 100 },
+                            { label: "數位成熟度", value: "中等", confidence: 85 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "決策風格",
+                        icon: "🎯",
+                        items: [
+                            { label: "決策速度", value: "謹慎", confidence: 90 },
+                            { label: "風險承受", value: "保守", confidence: 88 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_008',
+                    name: '陳建宏',
+                    photo: '👨‍💼',
+                    title: '製造業數位轉型顧問',
+                    experience: 15,
+                    score: 87.8,
+                    matchReasons: [
+                        { category: '產業專長', score: 36, details: '15 年製造業經驗，熟悉產業痛點' },
+                        { category: '客戶類型', score: 27, details: '擅長服務中型製造企業' },
+                        { category: '性格匹配', score: 17, details: '穩健專業，適合謹慎決策型' },
+                        { category: '歷史績效', score: 7.8, details: '成交率 65%、客戶續約率 92%' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: '進階數據分析模組', probability: 75, timing: '6-12 個月後', reason: '系統穩定後通常會需要更深入的分析功能' },
+                    { product: 'AI 預測維護', probability: 60, timing: '12-18 個月後', reason: '製造業對預防性維護需求高' }
+                ]
+            },
+            
+            education_study_abroad: {
+                title: "案例 4：教育 - 留學諮詢",
+                industry: "教育",
+                icon: "🎓",
+                customer: {
+                    basic: {
+                        name: "張媽媽（代女兒諮詢）",
+                        age: 48,
+                        gender: "女",
+                        location: "台北市",
+                        occupation: "醫師",
+                        studentAge: 17,
+                        studentGrade: "高三"
+                    },
+                    family: {
+                        income: "雙薪家庭，年收入 400-600 萬"
+                    },
+                    personality: {
+                        decisionStyle: "謹慎研究型",
+                        communicationStyle: "詳細詢問",
+                        riskTolerance: "中等",
+                        trustBuilding: "需要專業建議和成功案例",
+                        pacePreference: "充分了解後再決定"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "美國大學申請", priority: "P0", confidence: 95 },
+                            { text: "醫學相關科系", priority: "P0", confidence: 90 }
+                        ],
+                        secondary: [
+                            { text: "獎學金申請", priority: "P1", confidence: 85 },
+                            { text: "生活輔導", priority: "P1", confidence: 80 }
+                        ],
+                        hidden: [
+                            { text: "未來就業規劃", confidence: 70 },
+                            { text: "移民可能性", confidence: 60 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 82,
+                        estimatedValue: "顧問費 15-25 萬",
+                        timeToDecision: "2-3 週",
+                        followUpStrategy: "提供申請時間表、學校分析、成功案例分享"
+                    }
+                },
+                conversation: [
+                    { bot: "您好！我是 AI 留學顧問小智。請問想了解哪方面的留學資訊？", user: "我女兒高三，想去美國讀大學" },
+                    { bot: "太好了！請問想申請什麼科系呢？", user: "她想讀醫學相關的" },
+                    { bot: "明白。請問目前成績和英文能力如何？", user: "成績不錯，英文也可以，托福大概 100 左右" },
+                    { bot: "很棒！請問預算方面有考量嗎？", user: "預算還好，但如果能申請到獎學金更好" },
+                    { bot: "了解！我會為您配對最專業的留學顧問...", user: null }
+                ],
+                realtimeAnalysis: [
+                    {
+                        trigger: 1,
+                        category: "學生背景",
+                        icon: "🎓",
+                        items: [
+                            { label: "年級", value: "高三", confidence: 100 },
+                            { label: "目標國家", value: "美國", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "科系偏好",
+                        icon: "📚",
+                        items: [
+                            { label: "科系", value: "醫學相關", confidence: 90 },
+                            { label: "專業領域", value: "理工醫", confidence: 95 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "學術能力",
+                        icon: "⭐",
+                        items: [
+                            { label: "成績", value: "良好", confidence: 85 },
+                            { label: "托福", value: "100分", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "家庭背景",
+                        icon: "👨‍👩‍👧",
+                        items: [
+                            { label: "經濟能力", value: "充裕", confidence: 90 },
+                            { label: "教育重視", value: "高", confidence: 95 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_012',
+                    name: '林曉雯',
+                    photo: '👩‍🎓',
+                    title: '美國醫學留學顧問',
+                    experience: 8,
+                    score: 91.2,
+                    matchReasons: [
+                        { category: '專業匹配', score: 37, details: '專精美國醫學院申請，成功率高' },
+                        { category: '客戶類型', score: 29, details: '擅長服務醫師家庭背景學生' },
+                        { category: '性格匹配', score: 17, details: '細心專業，適合謹慎型家長' },
+                        { category: '歷史績效', score: 8.2, details: '成交率 82%、錄取率 95%' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: '研究所申請輔導', probability: 70, timing: '4 年後', reason: '醫學生通常會繼續深造' },
+                    { product: '弟妹留學諮詢', probability: 65, timing: '2-3 年後', reason: '成功案例容易帶來家人推薦' }
+                ]
+            },
+            
+            interior_design_home: {
+                title: "案例 5：室內設計 - 新家裝修",
+                industry: "室內設計",
+                icon: "🏡",
+                customer: {
+                    basic: {
+                        name: "林小姐",
+                        age: 29,
+                        gender: "女",
+                        location: "台北市",
+                        occupation: "行銷企劃",
+                        income: "年收入 80-120 萬"
+                    },
+                    personality: {
+                        decisionStyle: "感覺驅動型",
+                        communicationStyle: "重視視覺和氛圍感",
+                        riskTolerance: "中等",
+                        trustBuilding: "需要看作品集和風格共鳴",
+                        pacePreference: "想找到對的感覺，願意慢慢看"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "新家裝修設計", priority: "P0", confidence: 98 },
+                            { text: "溫暖簡約風格", priority: "P0", confidence: 95 }
+                        ],
+                        secondary: [
+                            { text: "自然材質運用", priority: "P1", confidence: 90 },
+                            { text: "收納機能充足", priority: "P1", confidence: 85 }
+                        ],
+                        hidden: [
+                            { text: "未來擴充彈性", confidence: 75 },
+                            { text: "智能家居整合", confidence: 70 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 88,
+                        estimatedValue: "80-120 萬",
+                        timeToDecision: "1-2 週",
+                        followUpStrategy: "分享作品集、風格案例、客戶見證"
+                    }
+                },
+                conversation: [
+                    { bot: "您好！我是 AI 設計顧問小智。請問今天想了解什麼樣的設計服務？", user: "我最近買了新房子，想做室內設計" },
+                    { bot: "太棒了！恭喜您！請問預算大概多少呢？", user: "大概 80 到 120 萬之間" },
+                    { bot: "了解。請問您喜歡什麼樣的風格感覺？", user: "我喜歡溫暖、簡單、不要太複雜的那種" },
+                    { bot: "很棒的選擇！那材質方面有偏好嗎？", user: "喜歡木質、天然的材料，感覺比較舒服" },
+                    { bot: "明白了！最後想問，收納需求重要嗎？", user: "很重要！我東西滿多的，但又不想看起來很亂" },
+                    { bot: "完美！我已經充分了解您的需求，現在為您配對最適合的設計師...", user: null }
+                ],
+                realtimeAnalysis: [
+                    { 
+                        trigger: 1,
+                        category: "專案背景",
+                        icon: "🏠",
+                        items: [
+                            { label: "專案類型", value: "新家裝修", confidence: 98 },
+                            { label: "居住狀態", value: "準備入住", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "預算評估",
+                        icon: "💰",
+                        items: [
+                            { label: "預算範圍", value: "80-120萬", confidence: 100 },
+                            { label: "消費能力", value: "中等", confidence: 95 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "風格偏好",
+                        icon: "✨",
+                        items: [
+                            { label: "風格關鍵字", value: "溫暖簡約", confidence: 95 },
+                            { label: "審美類型", value: "自然舒適", confidence: 90 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "材質偏好",
+                        icon: "🌳",
+                        items: [
+                            { label: "喜好材質", value: "木質/天然", confidence: 90 },
+                            { label: "風格標籤", value: "Warm Minimal", confidence: 88 }
+                        ]
+                    },
+                    {
+                        trigger: 5,
+                        category: "機能需求",
+                        icon: "📦",
+                        items: [
+                            { label: "收納需求", value: "高", confidence: 100 },
+                            { label: "生活習慣", value: "重視整潔", confidence: 92 }
+                        ]
+                    },
+                    {
+                        trigger: 6,
+                        category: "配對準備",
+                        icon: "🤖",
+                        items: [
+                            { label: "風格定位", value: "溫暖簡約/自然", confidence: 95 },
+                            { label: "配對信心", value: "極高", confidence: 98 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_018',
+                    name: '陳芸希',
+                    photo: '👩‍🎨',
+                    title: '溫暖系空間設計師',
+                    experience: 7,
+                    score: 93.8,
+                    matchReasons: [
+                        { category: '風格匹配', score: 38, details: '擅長溫暖簡約風格，自然材質運用' },
+                        { category: '客戶類型', score: 31, details: '擅長服務年輕首購族，重視生活感' },
+                        { category: '溝通方式', score: 17, details: '善於視覺溝通，不用專業術語' },
+                        { category: '歷史績效', score: 7.8, details: '成交率 88%、客戶滿意度 4.9/5.0' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: '智能收納系統', probability: 85, timing: '設計階段', reason: '客戶高度重視收納，可提升空間使用效率' },
+                    { product: '材質升級方案', probability: 78, timing: '施工前', reason: '偏好自然材質，通常願意加預算提升質感' },
+                    { product: '智能照明系統', probability: 70, timing: '3-6 個月後', reason: '年輕客群對智能家居接受度高' }
+                ]
+            }
+        };
+        
+        const AGENT_PROFILES = {
+            agent_001: {
+                id: 'agent_001',
+                name: '林雅婷',
+                photo: '👩‍💼',
+                title: '資深保險規劃師',
+                experience: 12,
+                age: 38,
+                education: '台大財金系',
+                certifications: ['CFP', 'LUTCF', 'RFC'],
+                personality: {
+                    extroversion: 7,
+                    agreeableness: 9,
+                    conscientiousness: 8,
+                    emotionalStability: 8,
+                    openness: 6,
+                    patience: 9,
+                    empathy: 9
+                },
+                skills: {
+                    productKnowledge: 9,
+                    needsAnalysis: 9,
+                    relationshipBuilding: 9,
+                    negotiation: 7,
+                    presentation: 8,
+                    closingTechnique: 8
+                },
+                performance: {
+                    conversionRate: 85,
+                    avgDealSize: 120000,
+                    customerSatisfaction: 4.8,
+                    referralRate: 78
+                },
+                learningData: {
+                    totalMatches: 156,
+                    successfulMatches: 132,
+                    accuracyRate: 84.6,
+                    improvementTrend: '+5.2%'
+                }
+            },
+            agent_005: {
+                id: 'agent_005',
+                name: '張志豪',
+                photo: '👨‍💼',
+                title: '投資型房產專家',
+                experience: 10,
+                age: 35,
+                education: '政大地政系',
+                certifications: ['不動產經紀人', '都市更新規劃師'],
+                personality: {
+                    extroversion: 9,
+                    agreeableness: 7,
+                    conscientiousness: 9,
+                    emotionalStability: 9,
+                    openness: 8,
+                    assertiveness: 9
+                },
+                skills: {
+                    productKnowledge: 10,
+                    needsAnalysis: 9,
+                    negotiation: 10,
+                    dataAnalysis: 10,
+                    closingTechnique: 9
+                },
+                performance: {
+                    conversionRate: 72,
+                    avgDealSize: 25000000,
+                    customerSatisfaction: 4.9,
+                    referralRate: 85
+                },
+                learningData: {
+                    totalMatches: 203,
+                    successfulMatches: 146,
+                    accuracyRate: 71.9,
+                    improvementTrend: '+3.8%'
+                }
+            },
+            agent_008: {
+                id: 'agent_008',
+                name: '陳建宏',
+                photo: '👨‍💼',
+                title: '製造業數位轉型顧問',
+                experience: 15,
+                age: 42,
+                education: '清大工業工程',
+                certifications: ['PMP', 'Six Sigma'],
+                skills: {
+                    industryKnowledge: 10,
+                    technicalExpertise: 9,
+                    projectManagement: 9
+                },
+                performance: {
+                    conversionRate: 65,
+                    customerSatisfaction: 4.7,
+                    renewalRate: 92
+                },
+                learningData: {
+                    totalMatches: 89,
+                    successfulMatches: 58,
+                    accuracyRate: 65.2,
+                    improvementTrend: '+4.1%'
+                }
+            },
+            agent_012: {
+                id: 'agent_012',
+                name: '林曉雯',
+                photo: '👩‍🎓',
+                title: '美國醫學留學顧問',
+                experience: 8,
+                age: 33,
+                education: 'UCLA 教育碩士',
+                certifications: ['IECA'],
+                skills: {
+                    applicationExpertise: 10,
+                    counseling: 9,
+                    networkConnections: 8
+                },
+                performance: {
+                    conversionRate: 82,
+                    admissionRate: 95,
+                    customerSatisfaction: 4.9
+                },
+                learningData: {
+                    totalMatches: 124,
+                    successfulMatches: 102,
+                    accuracyRate: 82.3,
+                    improvementTrend: '+6.1%'
+                }
+            },
+            agent_018: {
+                id: 'agent_018',
+                name: '陳芸希',
+                photo: '👩‍🎨',
+                title: '溫暖系空間設計師',
+                experience: 7,
+                age: 34,
+                education: '實踐大學室內設計系',
+                certifications: ['室內裝修專業技術人員', 'LEED GA'],
+                personality: {
+                    extroversion: 7,
+                    agreeableness: 9,
+                    conscientiousness: 8,
+                    emotionalStability: 8,
+                    openness: 9,
+                    aestheticSensitivity: 10,
+                    empathy: 9
+                },
+                skills: {
+                    styleExpertise: 10,
+                    spatialPlanning: 9,
+                    materialSelection: 10,
+                    visualCommunication: 9,
+                    budgetManagement: 8,
+                    clientCounseling: 9
+                },
+                performance: {
+                    conversionRate: 88,
+                    avgDealSize: 1000000,
+                    customerSatisfaction: 4.9,
+                    referralRate: 92
+                },
+                learningData: {
+                    totalMatches: 167,
+                    successfulMatches: 147,
+                    accuracyRate: 88.0,
+                    improvementTrend: '+6.8%'
+                }
+            }
+        };
+        
+        const SceneManager = {
+            currentScene: 'intro',
+            currentCase: null,
+            conversationPaused: false,
+            conversationFinished: false,
+            sceneOrder: ['intro', 'caseSelect', 'conversation', 'processing', 'cdp', 'matching', 'agentProfile', 'aiCoaching', 'feedback', 'crossProduct', 'learning', 'final'],
+            
+            getProgress() {
+                const index = this.sceneOrder.indexOf(this.currentScene);
+                return index >= 0 ? Math.round((index / (this.sceneOrder.length - 1)) * 100) : 0;
+            },
+            
+            updateProgressBar() {
+                const progressBar = document.getElementById('progressBar');
+                const progressBarFill = document.getElementById('progressBarFill');
+                
+                if (this.currentScene === 'intro' || this.currentScene === 'caseSelect') {
+                    progressBar.style.display = 'none';
+                } else {
+                    progressBar.style.display = 'block';
+                    progressBarFill.style.width = this.getProgress() + '%';
+                }
+            },
+            
+            switchTo(sceneName, data = {}) {
+                this.currentScene = sceneName;
+                this.updateProgressBar();
+                
+                const container = document.getElementById('mainContainer');
+                container.innerHTML = '';
+                container.scrollTop = 0;
+                window.scrollTo(0, 0);
+                
+                const scenes = {
+                    intro: IntroScene,
+                    caseSelect: CaseSelectScene,
+                    conversation: ConversationScene,
+                    processing: ProcessingScene,
+                    cdp: CDPScene,
+                    matching: MatchingScene,
+                    agentProfile: AgentProfileScene,
+                    aiCoaching: AICoachingScene,
+                    feedback: FeedbackScene,
+                    crossProduct: CrossProductScene,
+                    learning: LearningScene,
+                    final: FinalScene
+                };
+                
+                if (scenes[sceneName]) {
+                    scenes[sceneName](container, data);
+                }
+            }
+        };
+        
+        function IntroScene(container) {
+            container.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center">
+                    <div class="text-center fade-in-up">
+                        <div class="text-6xl font-black mb-6 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            AIM Platform
+                        </div>
+                        <div class="text-3xl font-bold mb-4 text-gray-300">
+                            智能客戶分析與配對平台
+                        </div>
+                        <div class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+                            用 AI 深度了解客戶，精準配對最適合的業務員<br>
+                            <span class="text-sm mt-2 block text-gray-500">涵蓋 5 大行業完整案例 + 學習反饋閉環系統</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="text-sm font-medium">AI 深度對話</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">📊</div>
+                                <div class="text-sm font-medium">360° CDP</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <div class="text-sm font-medium">智能配對</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">👤</div>
+                                <div class="text-sm font-medium">業務員檔案</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="text-sm font-medium">AI 教練</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">📈</div>
+                                <div class="text-sm font-medium">學習反饋</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🔄</div>
+                                <div class="text-sm font-medium">跨產品延伸</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="text-sm font-medium">AI 進化</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">💰</div>
+                                <div class="text-sm font-medium">ROI 追蹤</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+                            <div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl p-6">
+                                <div class="text-5xl font-black mb-2">+35%*</div>
+                                <div class="text-lg opacity-90">成交率提升</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-6">
+                                <div class="text-5xl font-black mb-2">-60%*</div>
+                                <div class="text-lg opacity-90">無效拜訪減少</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-6">
+                                <div class="text-5xl font-black mb-2">最高可達10X*</div>
+                                <div class="text-lg opacity-90">客戶終身價值</div>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onclick="SceneManager.switchTo('caseSelect')"
+                            class="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold rounded-full hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-2xl"
+                        >
+                            開始完整演示 →
+                        </button>
+                        <div class="mt-8 text-sm text-gray-500">
+                            ⚡ 5 大行業真實案例 × 完整閉環流程
+                        </div>
+			<div class="mt-2 text-sm text-gray-500">
+			    <a href="supporting-reference.html" class="demo-button">
+                                 					 <span>*資料來源▶️</span>
+                          					  </a>
+			</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function CaseSelectScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-12 fade-in-up">
+                        <div class="text-5xl font-bold mb-4">📚 選擇行業案例</div>
+                        <div class="text-xl text-gray-400">每個案例都包含完整的對話→分析→配對→反饋→延伸流程</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-6 mb-8">
+                        ${Object.entries(CASE_STUDIES).map(([key, caseData]) => `
+                            <div class="case-card bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20"
+                                 onclick="SceneManager.currentCase = '${key}'; SceneManager.conversationFinished = false; SceneManager.switchTo('conversation')">
+                                <div class="flex items-center gap-6">
+                                    <div class="text-7xl">${caseData.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="text-2xl font-bold mb-2">${caseData.title}</div>
+                                        <div class="text-sm text-gray-400 mb-3">
+                                            <strong>客戶：</strong>${caseData.customer.basic.name} | 
+                                            <strong>背景：</strong>${caseData.customer.basic.occupation}
+                                        </div>
+                                        <div class="flex gap-2 flex-wrap">
+                                            <span class="px-3 py-1 bg-purple-500/20 rounded-full text-xs">🎯 智能配對</span>
+                                            <span class="px-3 py-1 bg-blue-500/20 rounded-full text-xs">🤖 AI 教練</span>
+                                            <span class="px-3 py-1 bg-green-500/20 rounded-full text-xs">📈 學習反饋</span>
+                                            <span class="px-3 py-1 bg-orange-500/20 rounded-full text-xs">🔄 跨產品延伸</span>
+                                        </div>
+					<div class="mt-2 text-xs text-gray-400">
+						*本演示中所示的所有客戶資料、資產及數據均為模擬，僅供示範用途。
+					</div>
+                                    </div>
+                                    <div class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-lg font-bold">
+                                        開始演示 →
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="text-center">
+                        <button 
+                            onclick="SceneManager.switchTo('intro')"
+                            class="px-8 py-3 bg-white/20 text-white text-lg font-bold rounded-full hover:bg-white/30 transition-all"
+                        >
+                            ← 返回首頁
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function ConversationScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            SceneManager.conversationPaused = false;
+            SceneManager.conversationFinished = false;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-4xl font-bold mb-2">🤖 AI 自然對話 + 實時分析</div>
+                        <div class="text-gray-400">透過輕鬆對話，深度了解客戶需求</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="text-3xl">💬</div>
+                                    <div class="text-2xl font-bold">對話進行中</div>
+                                </div>
+                                <div id="chatContainer" class="space-y-4 mb-6" style="min-height: 500px; max-height: 600px; overflow-y: auto;">
+                                </div>
+                                <div class="flex justify-center gap-4">
+                                    <button id="pauseBtn" 
+                                            onclick="togglePause()"
+                                            class="px-8 py-3 bg-yellow-600 rounded-full font-bold hover:bg-yellow-700 transition-all">
+                                        ⏸️ 暫停
+                                    </button>
+                                    <button id="nextBtn" 
+                                            onclick="SceneManager.switchTo('processing')" 
+                                            style="display: none;"
+                                            class="px-12 py-4 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full font-bold hover:from-green-700 hover:to-emerald-700 transition-all glow-animation">
+                                        ✅ 對話完成，進入下一步 →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:col-span-1">
+                            <div class="analysis-panel bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-2xl p-6 border border-purple-500/50">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="text-3xl">🔍</div>
+                                    <div>
+                                        <div class="text-xl font-bold">實時分析</div>
+                                        <div class="text-xs text-gray-400">AI 正在分析中...</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="relative mb-6">
+                                    <div class="scan-line"></div>
+                                    <div class="bg-white/10 rounded-lg p-4 border border-white/20">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div class="w-3 h-3 bg-green-500 rounded-full pulse-animation"></div>
+                                            <div class="text-sm font-bold">分析狀態：運行中</div>
+                                        </div>
+                                        <div class="text-xs text-gray-400">已處理 <span id="processedRounds">0</span> 輪對話</div>
+                                    </div>
+                                </div>
+                                
+                                <div id="analysisContainer" class="space-y-4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const chatContainer = document.getElementById('chatContainer');
+            const analysisContainer = document.getElementById('analysisContainer');
+            const processedRounds = document.getElementById('processedRounds');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            window.togglePause = function() {
+                SceneManager.conversationPaused = !SceneManager.conversationPaused;
+                pauseBtn.textContent = SceneManager.conversationPaused ? '▶️ 繼續' : '⏸️ 暫停';
+            };
+            
+            async function showConversation() {
+                for (let i = 0; i < caseData.conversation.length; i++) {
+                    while (SceneManager.conversationPaused) {
+                        await delay(100);
+                    }
+                    
+                    const msg = caseData.conversation[i];
+                    
+                    if (msg.bot) {
+                        await delay(1500);
+                        const botDiv = document.createElement('div');
+                        botDiv.className = 'flex items-start gap-3 slide-in-right';
+                        botDiv.innerHTML = `
+                            <div class="text-3xl">🤖</div>
+                            <div class="bg-blue-500/20 border border-blue-500/50 rounded-2xl rounded-tl-none px-6 py-3 max-w-xl">
+                                ${msg.bot}
+                            </div>
+                        `;
+                        chatContainer.appendChild(botDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+                    
+                    if (msg.user) {
+                        await delay(2000);
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'flex items-start gap-3 justify-end slide-in-right';
+                        userDiv.innerHTML = `
+                            <div class="bg-purple-500/20 border border-purple-500/50 rounded-2xl rounded-tr-none px-6 py-3 max-w-xl">
+                                ${msg.user}
+                            </div>
+                            <div class="text-3xl">👤</div>
+                        `;
+                        chatContainer.appendChild(userDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                        processedRounds.textContent = i + 1;
+                        
+                        const analysisData = caseData.realtimeAnalysis.find(a => a.trigger === i + 1);
+                        if (analysisData) {
+                            await delay(800);
+                            addAnalysisItem(analysisData, analysisContainer);
+                        }
+                    }
+                }
+                
+                SceneManager.conversationFinished = true;
+                pauseBtn.style.display = 'none';
+                nextBtn.style.display = 'inline-block';
+            }
+            
+            function addAnalysisItem(data, container) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'analysis-item bg-white/10 rounded-xl p-4 border border-white/20';
+                
+                itemDiv.innerHTML = `
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="text-2xl">${data.icon}</div>
+                        <div class="font-bold">${data.category}</div>
+                    </div>
+                    <div class="space-y-2">
+                        ${data.items.map(item => `
+                            <div class="bg-white/5 rounded-lg p-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="text-sm text-gray-300">${item.label}</div>
+                                    <div class="text-xs bg-green-500/20 border border-green-500/50 px-2 py-1 rounded">
+                                        ${item.confidence}%
+                                    </div>
+                                </div>
+                                <div class="font-bold text-sm">${item.value}</div>
+                                <div class="confidence-bar bg-white/10 rounded-full h-2 mt-2">
+                                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full h-2 transition-all duration-1000" 
+                                         style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(itemDiv);
+                
+                setTimeout(() => {
+                    itemDiv.classList.add('active');
+                    itemDiv.querySelectorAll('.confidence-bar > div').forEach((bar, index) => {
+                        setTimeout(() => {
+                            bar.style.width = data.items[index].confidence + '%';
+                        }, 300);
+                    });
+                }, 100);
+            }
+            
+            showConversation();
+        }
+        
+        function ProcessingScene(container) {
+            container.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center">
+                    <div class="text-center fade-in-up">
+                        <div class="text-6xl mb-6 rotate-animation">🧠</div>
+                        <div class="text-4xl font-bold mb-4">AI 深度分析中...</div>
+                        <div class="text-gray-400 mb-8">正在解析客戶需求、性格特質、購買意向</div>
+                        <div class="flex justify-center gap-2">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full pulse-animation" style="animation-delay: 0s;"></div>
+                            <div class="w-3 h-3 bg-pink-500 rounded-full pulse-animation" style="animation-delay: 0.2s;"></div>
+                            <div class="w-3 h-3 bg-blue-500 rounded-full pulse-animation" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => SceneManager.switchTo('cdp'), 2000);
+        }
+        
+        function CDPScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const customer = caseData.customer;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">📊 360° 客戶資料平台（CDP）</div>
+                        <div class="text-xl text-gray-400">AI 自動建構完整客戶畫像</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl p-8 mb-8 fade-in-up">
+                        <div class="flex items-center gap-8">
+                            <div class="text-9xl">👤</div>
+                            <div class="flex-1">
+                                <div class="text-4xl font-bold mb-2">${customer.basic.name}</div>
+                                <div class="text-2xl mb-4">${customer.basic.occupation}</div>
+                                <div class="grid grid-cols-2 gap-4 text-lg">
+                                    <div><strong>年齡：</strong>${customer.basic.age} 歲</div>
+                                    <div><strong>地點：</strong>${customer.basic.location}</div>
+                                    <div><strong>收入：</strong>${customer.basic.income}</div>
+                                    ${customer.basic.company ? `<div><strong>公司：</strong>${customer.basic.company}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 data-card">
+                            <div class="text-2xl font-bold mb-4">🧠 性格特質分析</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>決策風格</span>
+                                        <span class="font-bold">${customer.personality.decisionStyle}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>溝通偏好</span>
+                                        <span class="font-bold">${customer.personality.communicationStyle}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>風險承受度</span>
+                                        <span class="font-bold">${customer.personality.riskTolerance}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>決策節奏</span>
+                                        <span class="font-bold">${customer.personality.pacePreference}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 data-card">
+                            <div class="text-2xl font-bold mb-4">🎯 需求結構</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-sm text-gray-400 mb-2">核心需求</div>
+                                    ${customer.needs.primary.map(need => `
+                                        <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-2 mb-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm">${need.text}</span>
+                                                <span class="text-xs bg-green-500/30 px-2 py-1 rounded">${need.confidence}%</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-400 mb-2">次要需求</div>
+                                    ${customer.needs.secondary.slice(0, 2).map(need => `
+                                        <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-2 mb-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm">${need.text}</span>
+                                                <span class="text-xs bg-blue-500/30 px-2 py-1 rounded">${need.confidence}%</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">🔮 AI 行為預測</div>
+                        <div class="grid grid-cols-4 gap-6">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${customer.behavioral.conversionProbability}%</div>
+                                <div class="text-sm opacity-90">預測成交機率</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-2xl font-bold mb-2">${customer.behavioral.estimatedValue}</div>
+                                <div class="text-sm opacity-90">預估交易價值</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-2xl font-bold mb-2">${customer.behavioral.timeToDecision}</div>
+                                <div class="text-sm opacity-90">預期決策時間</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">⭐</div>
+                                <div class="text-sm opacity-90">高質量潛客</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('conversation')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← 返回對話
+                        </button>
+                        <button onclick="SceneManager.switchTo('matching')"
+                                class="px-12 py-4 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-xl font-bold glow-animation hover:from-green-700 hover:to-emerald-700 transition-all">
+                            開始智能配對 →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function MatchingScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agent = caseData.bestAgent;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🎯 AI 智能配對系統</div>
+                        <div class="text-xl text-gray-400">基於 89 個維度的精準匹配</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl p-8 mb-8 fade-in-up glow-animation">
+                        <div class="text-center mb-6">
+                            <div class="text-2xl font-bold mb-2">🏆 最佳配對</div>
+                            <div class="matching-score">${Math.round(agent.score)}</div>
+                            <div class="text-xl opacity-90">匹配度分數</div>
+                        </div>
+                        <div class="flex items-center gap-8 bg-white/10 rounded-2xl p-8">
+                            <div class="text-8xl">${agent.photo}</div>
+                            <div class="flex-1">
+                                <div class="text-4xl font-bold mb-2">${agent.name}</div>
+                                <div class="text-2xl mb-4">${agent.title}</div>
+                                <div class="text-lg opacity-90">經驗：${agent.experience} 年</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">💡 為什麼選擇 ${agent.name}？</div>
+                        <div class="space-y-4">
+                            ${agent.matchReasons.map(reason => `
+                                <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/50 rounded-xl p-6">
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="text-3xl font-black text-purple-300">${reason.score}</div>
+                                        <div class="flex-1">
+                                            <div class="text-xl font-bold mb-1">${reason.category}</div>
+                                            <div class="text-sm opacity-90">${reason.details}</div>
+                                        </div>
+                                        <div class="text-2xl">✓</div>
+                                    </div>
+                                    <div class="bg-white/10 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full h-2" 
+                                             style="width: ${(reason.score / 40) * 100}%;"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('cdp')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← 返回 CDP
+                        </button>
+                        <button onclick="SceneManager.switchTo('agentProfile')"
+                                class="px-12 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full text-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition-all">
+                            查看業務員檔案 →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function AgentProfileScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agentId = caseData.bestAgent.id;
+            const agent = AGENT_PROFILES[agentId];
+            
+            const skillNames = {
+                productKnowledge: '產品知識',
+                needsAnalysis: '需求分析',
+                relationshipBuilding: '關係建立',
+                negotiation: '談判能力',
+                presentation: '簡報能力',
+                closingTechnique: '成交技巧',
+                industryKnowledge: '產業知識',
+                technicalExpertise: '技術專業',
+                projectManagement: '專案管理',
+                applicationExpertise: '申請專業',
+                counseling: '諮詢能力',
+                networkConnections: '人脈網絡',
+                styleExpertise: '風格專業',
+                spatialPlanning: '空間規劃',
+                materialSelection: '材質選配',
+                visualCommunication: '視覺溝通',
+                budgetManagement: '預算管理',
+                clientCounseling: '客戶諮詢',
+                dataAnalysis: '數據分析'
+            };
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">👤 業務員完整檔案系統</div>
+                        <div class="text-xl text-gray-400">深度了解每位業務員的特質與專長</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl p-8 mb-8 fade-in-up">
+                        <div class="flex items-center gap-8">
+                            <div class="text-9xl">${agent.photo}</div>
+                            <div class="flex-1">
+                                <div class="text-5xl font-bold mb-2">${agent.name}</div>
+                                <div class="text-3xl mb-4">${agent.title}</div>
+                                <div class="grid grid-cols-2 gap-4 text-lg">
+                                    <div><strong>經驗：</strong>${agent.experience} 年</div>
+                                    <div><strong>年齡：</strong>${agent.age || '保密'} 歲</div>
+                                    <div><strong>學歷：</strong>${agent.education}</div>
+                                    <div><strong>證照：</strong>${agent.certifications.slice(0, 2).join(', ')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4">💪 專業技能</div>
+                            <div class="space-y-3">
+                                ${Object.entries(agent.skills).slice(0, 6).map(([skill, level]) => `
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>${skillNames[skill] || skill}</span>
+                                            <span class="font-bold">${level}/10</span>
+                                        </div>
+                                        <div class="bg-white/10 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full h-2" 
+                                                 style="width: ${level * 10}%;"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4">📊 歷史績效</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gradient-to-br from-green-600/30 to-emerald-600/30 rounded-xl p-4 text-center">
+                                    <div class="text-3xl font-black mb-1">${agent.performance.conversionRate}%</div>
+                                    <div class="text-xs">成交率</div>
+                                </div>
+                                <div class="bg-gradient-to-br from-blue-600/30 to-cyan-600/30 rounded-xl p-4 text-center">
+                                    <div class="text-3xl font-black mb-1">${agent.performance.customerSatisfaction}</div>
+                                    <div class="text-xs">客戶滿意度</div>
+                                </div>
+                                ${agent.performance.avgDealSize ? `
+                                    <div class="bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">${(agent.performance.avgDealSize / 10000).toFixed(0)}萬</div>
+                                        <div class="text-xs">平均成交金額</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.renewalRate ? `
+                                    <div class="bg-gradient-to-br from-amber-600/30 to-orange-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">${agent.performance.renewalRate}%</div>
+                                        <div class="text-xs">客戶續約率</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.referralRate ? `
+                                    <div class="bg-gradient-to-br from-pink-600/30 to-rose-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">${agent.performance.referralRate}%</div>
+                                        <div class="text-xs">客戶推薦率</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.admissionRate ? `
+                                    <div class="bg-gradient-to-br from-green-600/30 to-teal-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">${agent.performance.admissionRate}%</div>
+                                        <div class="text-xs">錄取率</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">📈 AI 學習數據</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.totalMatches}</div>
+                                <div class="text-sm">總配對次數</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.successfulMatches}</div>
+                                <div class="text-sm">成功配對</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.accuracyRate}%</div>
+                                <div class="text-sm">準確率</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black text-green-300 mb-2">${agent.learningData.improvementTrend}</div>
+                                <div class="text-sm">改進趨勢</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('matching')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← 返回配對結果
+                        </button>
+                        <button onclick="SceneManager.switchTo('aiCoaching')"
+                                class="px-12 py-4 bg-gradient-to-r from-orange-600 to-red-600 rounded-full text-xl font-bold hover:from-orange-700 hover:to-red-700 transition-all">
+                            查看 AI 銷售教練 →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function AICoachingScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🤖 AI 銷售教練系統</div>
+                        <div class="text-xl text-gray-400">個人化指導策略與實戰建議</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">💬 溝通策略建議</div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-white/10 rounded-xl p-6">
+                                <div class="text-xl font-bold mb-3">✅ 建議做法</div>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• 開場時展現專業和親和力，建立信任</li>
+                                    <li>• 用數據支持每個建議，符合客戶理性決策風格</li>
+                                    <li>• 提供案例分享，增加說服力</li>
+                                    <li>• 保持耐心，不要急於推銷</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6">
+                                <div class="text-xl font-bold mb-3">❌ 避免做法</div>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• 不要過於強勢或急躁</li>
+                                    <li>• 避免只談產品特點，要從需求出發</li>
+                                    <li>• 不要忽略客戶的潛在需求</li>
+                                    <li>• 避免一次給太多資訊造成困擾</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">🎯 成交路徑規劃</div>
+                        <div class="space-y-4">
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">第 1 次會面（本週）</div>
+                                <div class="text-sm text-gray-400">建立信任、了解完整需求、初步方案介紹</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">第 2 次會面（下週）</div>
+                                <div class="text-sm text-gray-400">提供詳細方案比較、回答疑問、處理異議</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">第 3 次會面（2 週後）</div>
+                                <div class="text-sm text-gray-400">最終確認、簽約成交</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('agentProfile')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← 返回業務員檔案
+                        </button>
+                        <button onclick="SceneManager.switchTo('feedback')"
+                                class="px-12 py-4 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full text-xl font-bold hover:from-amber-700 hover:to-orange-700 transition-all">
+                            模擬成交後反饋 →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function FeedbackScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agent = AGENT_PROFILES[caseData.bestAgent.id];
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">📈 學習反饋系統</div>
+                        <div class="text-xl text-gray-400">追蹤配對結果，讓 AI 持續進化</div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-2xl font-bold mb-6">⏱️ 配對追蹤時間線</div>
+                        <div class="space-y-6">
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-11 14:30</div>
+                                <div class="text-gray-400">AI 完成客戶分析</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-11 14:35</div>
+                                <div class="text-gray-400">配對 ${agent.name}（分數：${caseData.bestAgent.score}）</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-11 15:00</div>
+                                <div class="text-gray-400">${agent.name} 接收客戶資料並開始跟進</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-18</div>
+                                <div class="text-gray-400">第一次面談（AI 建議執行中）</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-25</div>
+                                <div class="text-green-400 font-bold">✅ 成交！</div>
+                            </div>
+                            <div class="timeline-item glow-animation">
+                                <div class="font-bold mb-1 text-amber-400">2026-02-26（現在）</div>
+                                <div class="text-amber-400">📊 收集反饋數據中...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4 text-green-400">✅ 成交結果</div>
+                            <div class="space-y-4">
+                                <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-4">
+                                    <div class="text-sm text-gray-400 mb-1">成交狀態</div>
+                                    <div class="text-2xl font-bold">已成交</div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4">
+                                    <div class="text-sm text-gray-400 mb-1">成交金額</div>
+                                    <div class="text-xl font-bold">${caseData.customer.behavioral.estimatedValue.split('（')[0] || caseData.customer.behavioral.estimatedValue}</div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4">
+                                    <div class="text-sm text-gray-400 mb-1">決策週期</div>
+                                    <div class="text-xl font-bold">14 天</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4 text-blue-400">😊 客戶反饋</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-sm mb-2">整體滿意度</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold">9</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-sm mb-2">業務員匹配度</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold">9</span>
+                                    </div>
+                                </div>
+                                <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-3 text-center">
+                                    <div class="text-sm">願意推薦給朋友</div>
+                                    <div class="text-2xl font-bold">✅ 是</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4 text-purple-400">👩‍💼 業務員反饋</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-sm mb-2">配對準確度</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold">9</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-sm mb-2">AI 建議有用度</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="8" disabled>
+                                        <span class="text-2xl font-bold">8</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-3">
+                                    <div class="text-xs italic">
+                                        "AI 的客戶分析很準確，溝通策略也很實用"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">🤖 AI 學習分析</div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <div class="text-xl font-bold mb-4">✅ 做對了什麼</div>
+                                <div class="space-y-2">
+                                    <div class="bg-white/10 p-3 rounded-lg">
+                                        <div class="font-bold mb-1">性格匹配準確</div>
+                                        <div class="text-sm opacity-90">客戶的「${caseData.customer.personality.decisionStyle}」特質判斷正確</div>
+                                    </div>
+                                    <div class="bg-white/10 p-3 rounded-lg">
+                                        <div class="font-bold mb-1">需求挖掘深入</div>
+                                        <div class="text-sm opacity-90">成功識別隱性需求，創造更大價值</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-xl font-bold mb-4">📝 可改進之處</div>
+                                <div class="space-y-2">
+                                    <div class="bg-white/10 p-3 rounded-lg">
+                                        <div class="font-bold mb-1">預算評估偏保守</div>
+                                        <div class="text-sm opacity-90">實際成交金額高於初始預估</div>
+                                        <div class="text-xs text-amber-300 mt-1">→ 調整預算評估模型</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('aiCoaching')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← 返回 AI 教練
+                        </button>
+                        <button onclick="SceneManager.switchTo('crossProduct')"
+                                class="px-12 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full text-xl font-bold hover:from-cyan-700 hover:to-blue-700 transition-all">
+                            查看跨產品延伸 →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function CrossProductScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const opportunities = caseData.crossSellOpportunities;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🔄 跨產品延伸系統</div>
+                        <div class="text-xl text-gray-400">一次建檔，終身價值最大化</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">📋 客戶統一檔案（跨產品共享）</div>
+                        <div class="text-center">
+                            <div class="bg-white/10 rounded-xl p-6 inline-block">
+                                <div class="text-lg mb-2">檔案 ID：<span class="font-mono">CUST_20260211_001</span></div>
+                                <div class="text-sm bg-green-500/20 border border-green-500/50 px-4 py-2 rounded-full inline-block">
+                                    ✅ 所有產品線可存取
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">🎯 AI 識別的跨產品機會</div>
+                        <div class="space-y-4">
+                            ${opportunities.map((opp, index) => `
+                                <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/50 rounded-xl p-6">
+                                    <div class="flex items-center gap-6">
+                                        <div class="text-5xl">📦</div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-4 mb-2 flex-wrap">
+                                                <div class="text-2xl font-bold">${index + 1}. ${opp.product}</div>
+                                                <div class="px-4 py-1 bg-orange-500/30 border border-orange-500/50 rounded-full text-sm">
+                                                    機率：${opp.probability}%
+                                                </div>
+                                                <div class="px-4 py-1 bg-blue-500/30 border border-blue-500/50 rounded-full text-sm">
+                                                    時機：${opp.timing}
+                                                </div>
+                                            </div>
+                                            <div class="text-sm opacity-90 mb-3">${opp.reason}</div>
+                                            <button class="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-sm font-bold hover:from-green-700 hover:to-emerald-700 transition-all">
+                                                設定自動提醒
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">💰 客戶終身價值預測（CLV）</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">當前價值</div>
+                                <div class="text-4xl font-black mb-2">12萬</div>
+                                <div class="text-xs opacity-75">已購</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">1 年預測</div>
+                                <div class="text-4xl font-black mb-2">28萬</div>
+                                <div class="text-xs opacity-75">+產品2</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">3 年預測</div>
+                                <div class="text-4xl font-black mb-2">65萬</div>
+                                <div class="text-xs opacity-75">+產品3</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">5 年預測</div>
+                                <div class="text-4xl font-black text-yellow-300 mb-2">120萬</div>
+                                <div class="text-xs opacity-75">完整生態</div>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center text-lg">
+                            <span class="bg-white/20 px-6 py-3 rounded-full">
+                                📈 潛在終身價值放大 <span class="font-black text-yellow-300">10 倍</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('feedback')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← 返回學習反饋
+                        </button>
+                        <button onclick="SceneManager.switchTo('learning')"
+                                class="px-12 py-4 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full text-xl font-bold hover:from-amber-700 hover:to-orange-700 transition-all">
+                            查看 AI 進化歷程 →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function LearningScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🧠 AI 學習與進化</div>
+                        <div class="text-xl text-gray-400">數據驅動，持續優化</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6 text-center">🔄 完整學習閉環</div>
+                        <div class="text-center text-xl leading-relaxed">
+                            🤖 AI 對話 → 📊 客戶分析 → 🎯 智能配對 → 💼 業務跟進<br>
+                            ↓<br>
+                            📈 收集反饋 → 🔍 分析學習 → ⚡ 優化模型 → 🚀 升級系統
+                        </div>
+                        <div class="text-center mt-6">
+                            <span class="bg-yellow-500/20 border border-yellow-500/50 px-6 py-3 rounded-full">
+                                🔁 持續循環，永不停止進化
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">📊 學習系統統計</div>
+                        <div class="grid grid-cols-5 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">12,847</div>
+                                <div class="text-sm">總反饋數</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">82.3%</div>
+                                <div class="text-sm">平均準確率</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black text-yellow-300 mb-2">+15.7%</div>
+                                <div class="text-sm">半年改進</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-2xl font-black mb-2">客戶分析</div>
+                                <div class="text-sm">最大進步</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">A級</div>
+                                <div class="text-sm">數據品質</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">⚡ 雪球效應：越用越強</div>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">📊</div>
+                                <div class="text-2xl font-bold mb-2">更多數據</div>
+                                <div class="text-sm opacity-90">每次配對都產生反饋</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">🎯</div>
+                                <div class="text-2xl font-bold mb-2">更準配對</div>
+                                <div class="text-sm opacity-90">AI 學習優化</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">💰</div>
+                                <div class="text-2xl font-bold mb-2">更高成交</div>
+                                <div class="text-sm opacity-90">產生更多數據</div>
+                            </div>
+                        </div>
+                        <div class="mt-8 text-center text-xl">
+                            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-8 py-4 rounded-full inline-block font-bold">
+                                🔄 正向循環，指數級成長
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('crossProduct')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← 返回跨產品延伸
+                        </button>
+                        <button onclick="SceneManager.switchTo('final')"
+                                class="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all">
+                            查看價值總結 →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function FinalScene(container) {
+            container.innerHTML = `
+                <div class="max-w-6xl mx-auto py-12">
+                    <div class="text-center mb-12 fade-in-up">
+                        <div class="text-5xl font-bold mb-4">✨ 完整價值總結</div>
+                        <div class="text-2xl text-gray-400">從單次交易到終身價值的完整閉環系統</div>
+                    </div>
+                                      
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-12">
+                        <div class="text-3xl font-bold mb-6 text-center">🔄 完整系統架構</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="font-bold">AI 對話</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <div class="font-bold">智能配對</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="font-bold">AI 教練</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-amber-600 to-yellow-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">📈</div>
+                                <div class="font-bold">學習反饋</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-cyan-600 to-blue-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🔄</div>
+                                <div class="font-bold">跨產品延伸</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-pink-600 to-purple-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="font-bold">AI 進化</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">♾️</div>
+                                <div class="font-bold">無限循環</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-orange-600 to-red-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">💰</div>
+                                <div class="font-bold">ROI 追蹤</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-12">
+                        <div class="text-3xl font-bold mb-6">💰 投資回報率（ROI）</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">成交率提升</div>
+                                <div class="text-4xl font-black">+35%*</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">時間節省</div>
+                                <div class="text-4xl font-black">-60%*</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">客戶價值</div>
+                                <div class="text-4xl font-black">最高可達10X*</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">預估 ROI</div>
+                                <div class="text-4xl font-black text-yellow-300">500%*</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-3xl font-bold mb-6">🚀 準備好開始了嗎？</div>
+                        <div class="flex gap-4 justify-center">
+                            <button onclick="SceneManager.switchTo('caseSelect')"
+                                    class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                                ← 選擇其他案例
+                            </button>
+                            <button onclick="SceneManager.switchTo('intro')"
+                                    class="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all">
+                                🏠 回到首頁
+                            </button>
+                        </div>
+			<div class="mt-2 text-sm text-gray-500">
+			    <a href="supporting-reference.html" class="demo-button">
+                                 					<span>*資料來源▶</span>
+                            					</a>
+			</div>
+
+                    </div>
+                </div>
+            `;
+        }
+        
+        SceneManager.switchTo('intro');
+    </script>
+
+
+</body></html>

@@ -1,0 +1,2186 @@
+<!DOCTYPE html><html lang="en"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIM Platform - Connect with the Right Person, Every Time</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); }
+        }
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
+        .fade-in-up { 
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        .slide-in-right { 
+            animation: slideInRight 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        .pulse-animation { animation: pulse 2s ease-in-out infinite; }
+        .rotate-animation { animation: rotate 2s linear infinite; }
+        .glow-animation { animation: glow 2s ease-in-out infinite; }
+        
+        .data-card {
+            transition: all 0.3s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .matching-score {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .case-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .case-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(255,255,255,0.2);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .feedback-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
+            outline: none;
+        }
+        .feedback-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .analysis-panel {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .analysis-item {
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        
+        .analysis-item.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            animation: scan 2s linear infinite;
+        }
+        
+        .confidence-bar {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .confidence-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            to { left: 100%; }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-cols-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+            .grid-cols-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .grid-cols-5 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .matching-score {
+                font-size: 3rem;
+            }
+            .analysis-panel {
+                position: relative;
+                top: 0;
+                margin-top: 20px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white">
+    
+    <div id="progressBar" class="progress-bar" style="display: none;">
+        <div id="progressBarFill" class="progress-bar-fill" style="width: 0%"></div>
+    </div>
+    
+    <div id="mainContainer" class="container mx-auto px-4 py-8"></div>
+
+    <script>
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        const CASE_STUDIES = {
+            insurance_family: {
+                title: "Case 1: Insurance - Family Protection for Business Owner",
+                industry: "Insurance",
+                icon: "🏦",
+                customer: {
+                    basic: {
+                        name: "Michael Chen",
+                        age: 38,
+                        gender: "Male",
+                        location: "San Francisco, CA",
+                        occupation: "Design Studio Owner",
+                        company: "Creative Design Studio",
+                        employees: 8,
+                        income: "Annual income $200K-300K"
+                    },
+                    family: {
+                        status: "Married",
+                        spouse: "Yes",
+                        children: 2,
+                        childrenAges: "5 years old, 3 years old",
+                        parents: "Parents living",
+                        responsibility: "Primary breadwinner"
+                    },
+                    personality: {
+                        decisionStyle: "Analytical & Rational",
+                        communicationStyle: "Open & Talkative",
+                        riskTolerance: "Moderate to Conservative",
+                        trustBuilding: "Needs data support",
+                        pacePreference: "Patient, willing to understand deeply"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "Family Protection (Life & Health Insurance)", priority: "P0", confidence: 95 },
+                            { text: "Children's Education Fund Planning", priority: "P1", confidence: 88 }
+                        ],
+                        secondary: [
+                            { text: "Employee Group Insurance", priority: "P1", confidence: 92 },
+                            { text: "Key Person Insurance", priority: "P0", confidence: 90 }
+                        ],
+                        hidden: [
+                            { text: "Retirement Planning", confidence: 70 },
+                            { text: "Business Succession Planning", confidence: 60 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 78,
+                        estimatedValue: "Personal $80K-120K/year + Business $150K-250K/year",
+                        timeToDecision: "2-3 weeks",
+                        followUpStrategy: "Provide detailed plan comparison, data support, case studies"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm AI Advisor Alex. How can I help you today?", user: "I want to learn about insurance" },
+                    { bot: "Great! Are you looking for protection for yourself or your family?", user: "Mainly for my family" },
+                    { bot: "I understand. Could you tell me about your current family situation?", user: "Married with two kids, one is 5 and the other is 3" },
+                    { bot: "Got it. What do you do for a living?", user: "I own a design company with about 8 employees" },
+                    { bot: "Wow, you're a business owner! Have you thought about insurance coverage for your employees?", user: "I have, but not sure where to start" },
+                    { bot: "No problem! Last question - what's your annual budget?", user: "For personal, around $50K-100K. For business, depends on the plan" },
+                    { bot: "Perfect! I now have a complete understanding of your needs. Let me analyze the best plan for you...", user: null }
+                ],
+                realtimeAnalysis: [
+                    { 
+                        trigger: 1,
+                        category: "Basic Info",
+                        icon: "📋",
+                        items: [
+                            { label: "Family Status", value: "Married + 2 Children", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "Needs Identification",
+                        icon: "🎯",
+                        items: [
+                            { label: "Family Protection", value: "High Priority", confidence: 95 },
+                            { label: "Children's Education", value: "Potential Need", confidence: 75 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "Customer Profile",
+                        icon: "👤",
+                        items: [
+                            { label: "Occupation", value: "Business Owner", confidence: 100 },
+                            { label: "Decision Style", value: "Analytical", confidence: 88 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "Extended Needs",
+                        icon: "💼",
+                        items: [
+                            { label: "Employee Insurance", value: "Interested", confidence: 92 },
+                            { label: "Business Protection", value: "Potential Need", confidence: 85 }
+                        ]
+                    },
+                    {
+                        trigger: 5,
+                        category: "Budget Assessment",
+                        icon: "💰",
+                        items: [
+                            { label: "Personal Budget", value: "$50K-100K/year", confidence: 100 },
+                            { label: "Purchase Intent", value: "High", confidence: 90 }
+                        ]
+                    },
+                    {
+                        trigger: 6,
+                        category: "Matching Prep",
+                        icon: "🤖",
+                        items: [
+                            { label: "Data Completeness", value: "98%", confidence: 98 },
+                            { label: "Matching Confidence", value: "Very High", confidence: 95 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_001',
+                    name: 'Sarah Johnson',
+                    photo: '👩‍💼',
+                    title: 'Senior Insurance Planner',
+                    experience: 12,
+                    score: 89.5,
+                    matchReasons: [
+                        { category: 'Expertise Match', score: 35, details: 'Specializes in family protection & business insurance planning' },
+                        { category: 'Client Type', score: 28, details: 'Expert in serving mid-to-high income families and business owners' },
+                        { category: 'Personality Match', score: 18, details: 'Patient & friendly, perfect for cautious decision-makers' },
+                        { category: 'Historical Performance', score: 8.5, details: 'Conversion rate 85%, satisfaction 4.8/5.0' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Critical Illness Insurance', probability: 85, timing: '3-6 months later', reason: 'Parents with children often consider critical illness protection' },
+                    { product: "Children's Education Fund", probability: 78, timing: '6-12 months later', reason: 'Customer has expressed emphasis on children education' },
+                    { product: 'Retirement Planning', probability: 65, timing: '12-18 months later', reason: 'Age 38 is the right time to start retirement planning' }
+                ]
+            },
+            
+            realestate_investor: {
+                title: "Case 2: Real Estate - Investment Property",
+                industry: "Real Estate",
+                icon: "🏠",
+                customer: {
+                    basic: {
+                        name: "David Wang",
+                        age: 45,
+                        gender: "Male",
+                        location: "Austin, TX",
+                        occupation: "Tech Executive",
+                        company: "Semiconductor Company",
+                        income: "Annual income $300K-500K"
+                    },
+                    family: {
+                        status: "Married",
+                        children: 1,
+                        childrenAges: "15 years old"
+                    },
+                    personality: {
+                        decisionStyle: "Fast & Decisive",
+                        communicationStyle: "Direct & Practical",
+                        riskTolerance: "Moderate to High",
+                        trustBuilding: "Values data and ROI",
+                        pacePreference: "Fast-paced, dislikes delays"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "Investment Property", priority: "P0", confidence: 98 },
+                            { text: "Rental Yield > 4%", priority: "P0", confidence: 95 }
+                        ],
+                        secondary: [
+                            { text: "Future Appreciation Potential", priority: "P1", confidence: 90 },
+                            { text: "Convenient Transportation", priority: "P1", confidence: 85 }
+                        ],
+                        hidden: [
+                            { text: "Tax Planning", confidence: 75 },
+                            { text: "Asset Allocation Optimization", confidence: 70 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 72,
+                        estimatedValue: "$2M-3M",
+                        timeToDecision: "1-2 weeks",
+                        followUpStrategy: "Provide investment analysis report, market data, ROI calculation"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm AI Real Estate Advisor Alex. What type of property are you interested in?", user: "I'm looking for investment property" },
+                    { bot: "Great! What's your budget range?", user: "Between $2M to $3M" },
+                    { bot: "Understood. Do you prioritize rental yield or future appreciation?", user: "Rental yield first, but appreciation is also important" },
+                    { bot: "Got it. What's your target rental yield?", user: "At least 4% or above" },
+                    { bot: "Perfect! Any location preferences?", user: "Good transportation, preferably near subway station" },
+                    { bot: "Excellent! I understand your needs. Let me match you with the best real estate expert...", user: null }
+                ],
+                realtimeAnalysis: [
+                    { 
+                        trigger: 1,
+                        category: "Client Type",
+                        icon: "🎯",
+                        items: [
+                            { label: "Purchase Purpose", value: "Investment", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "Budget Assessment",
+                        icon: "💰",
+                        items: [
+                            { label: "Budget Range", value: "$2M-3M", confidence: 100 },
+                            { label: "Financial Strength", value: "High", confidence: 95 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "Investment Preference",
+                        icon: "📊",
+                        items: [
+                            { label: "Priority", value: "Rental Yield", confidence: 98 },
+                            { label: "Risk Preference", value: "Balanced", confidence: 85 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "Need Details",
+                        icon: "📋",
+                        items: [
+                            { label: "Target Yield", value: "≥4%", confidence: 100 },
+                            { label: "Decision Style", value: "Data-Driven", confidence: 92 }
+                        ]
+                    },
+                    {
+                        trigger: 5,
+                        category: "Location Preference",
+                        icon: "📍",
+                        items: [
+                            { label: "Transportation", value: "Near Subway", confidence: 100 },
+                            { label: "Area Requirement", value: "Prime Location", confidence: 88 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_005',
+                    name: 'James Anderson',
+                    photo: '👨‍💼',
+                    title: 'Investment Property Expert',
+                    experience: 10,
+                    score: 92.3,
+                    matchReasons: [
+                        { category: 'Expertise Match', score: 38, details: 'Specializes in investment properties & ROI analysis' },
+                        { category: 'Client Type', score: 30, details: 'Expert in serving high-net-worth, fast-decision clients' },
+                        { category: 'Personality Match', score: 16, details: 'Efficiency-oriented, perfect for fast-paced clients' },
+                        { category: 'Historical Performance', score: 8.3, details: 'Conversion rate 72%, satisfaction 4.9/5.0' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Second Investment Property', probability: 80, timing: '6-12 months later', reason: 'Investors typically continue expanding their portfolio' },
+                    { product: 'Commercial Real Estate', probability: 65, timing: '12-18 months later', reason: 'Asset diversification needs' }
+                ]
+            },
+            
+            saas_manufacturing: {
+                title: "Case 3: B2B SaaS - Mid-sized Manufacturing",
+                industry: "Enterprise Software",
+                icon: "💼",
+                customer: {
+                    basic: {
+                        name: "Robert Lee (CEO)",
+                        age: 52,
+                        gender: "Male",
+                        location: "Chicago, IL",
+                        occupation: "Manufacturing CEO",
+                        company: "Precision Parts Manufacturing",
+                        employees: 150,
+                        income: "Company annual revenue $50M"
+                    },
+                    personality: {
+                        decisionStyle: "Cautious & Conservative",
+                        communicationStyle: "Formal & Professional",
+                        riskTolerance: "Low",
+                        trustBuilding: "Needs case studies and trial period",
+                        pacePreference: "Steady, requires multiple discussions"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "Manufacturing Execution System (MES)", priority: "P0", confidence: 95 },
+                            { text: "Inventory Management Optimization", priority: "P0", confidence: 92 }
+                        ],
+                        secondary: [
+                            { text: "Quality Traceability System", priority: "P1", confidence: 88 },
+                            { text: "Data Analytics & Reporting", priority: "P1", confidence: 85 }
+                        ],
+                        hidden: [
+                            { text: "Automated Production Scheduling", confidence: 75 },
+                            { text: "Supply Chain Integration", confidence: 70 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 65,
+                        estimatedValue: "Annual contract $1.2M-2M",
+                        timeToDecision: "4-6 weeks",
+                        followUpStrategy: "Provide POC, industry case studies, phased implementation plan"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm AI Enterprise Advisor Alex. What management challenges is your company facing?", user: "Our production scheduling is often problematic, and inventory management is difficult" },
+                    { bot: "I understand. What's the size of your company?", user: "About 150 employees, annual revenue around $50M" },
+                    { bot: "Got it. Are you currently using any management systems?", user: "We have ERP, but production side still uses Excel" },
+                    { bot: "I see the pain point. How quickly do you want to implement a new system?", user: "No rush, but need to ensure it solves the problem" },
+                    { bot: "Very good! I'll match you with the most suitable enterprise consultant...", user: null }
+                ],
+                realtimeAnalysis: [
+                    {
+                        trigger: 1,
+                        category: "Pain Point Identification",
+                        icon: "⚠️",
+                        items: [
+                            { label: "Production Scheduling", value: "Pain Point", confidence: 95 },
+                            { label: "Inventory Management", value: "Pain Point", confidence: 92 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "Company Size",
+                        icon: "🏭",
+                        items: [
+                            { label: "Employees", value: "150 people", confidence: 100 },
+                            { label: "Company Size", value: "Mid-sized", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "System Status",
+                        icon: "💻",
+                        items: [
+                            { label: "Existing System", value: "ERP", confidence: 100 },
+                            { label: "Digital Maturity", value: "Medium", confidence: 85 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "Decision Style",
+                        icon: "🎯",
+                        items: [
+                            { label: "Decision Speed", value: "Cautious", confidence: 90 },
+                            { label: "Risk Tolerance", value: "Conservative", confidence: 88 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_008',
+                    name: 'Thomas Brown',
+                    photo: '👨‍💼',
+                    title: 'Manufacturing Digital Transformation Consultant',
+                    experience: 15,
+                    score: 87.8,
+                    matchReasons: [
+                        { category: 'Industry Expertise', score: 36, details: '15 years manufacturing experience, understands industry pain points' },
+                        { category: 'Client Type', score: 27, details: 'Expert in serving mid-sized manufacturing companies' },
+                        { category: 'Personality Match', score: 17, details: 'Steady & professional, perfect for cautious decision-makers' },
+                        { category: 'Historical Performance', score: 7.8, details: 'Conversion rate 65%, renewal rate 92%' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Advanced Analytics Module', probability: 75, timing: '6-12 months later', reason: 'After system stabilization, usually need deeper analytics' },
+                    { product: 'AI Predictive Maintenance', probability: 60, timing: '12-18 months later', reason: 'Manufacturing has high demand for preventive maintenance' }
+                ]
+            },
+            
+            education_study_abroad: {
+                title: "Case 4: Education - Study Abroad Consulting",
+                industry: "Education",
+                icon: "🎓",
+                customer: {
+                    basic: {
+                        name: "Jennifer Zhang (Mother, consulting for daughter)",
+                        age: 48,
+                        gender: "Female",
+                        location: "Los Angeles, CA",
+                        occupation: "Doctor",
+                        studentAge: 17,
+                        studentGrade: "High School Senior"
+                    },
+                    family: {
+                        income: "Dual-income family, annual income $400K-600K"
+                    },
+                    personality: {
+                        decisionStyle: "Cautious & Research-Oriented",
+                        communicationStyle: "Detailed Inquiries",
+                        riskTolerance: "Moderate",
+                        trustBuilding: "Needs professional advice and success stories",
+                        pacePreference: "Decide after thorough understanding"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "US University Application", priority: "P0", confidence: 95 },
+                            { text: "Medical-Related Major", priority: "P0", confidence: 90 }
+                        ],
+                        secondary: [
+                            { text: "Scholarship Application", priority: "P1", confidence: 85 },
+                            { text: "Life Counseling", priority: "P1", confidence: 80 }
+                        ],
+                        hidden: [
+                            { text: "Future Career Planning", confidence: 70 },
+                            { text: "Immigration Possibility", confidence: 60 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 82,
+                        estimatedValue: "Consulting fee $150K-250K",
+                        timeToDecision: "2-3 weeks",
+                        followUpStrategy: "Provide application timeline, school analysis, success stories"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm AI Study Abroad Advisor Alex. What study abroad information are you interested in?", user: "My daughter is a high school senior, wants to study in the US" },
+                    { bot: "Great! What major is she interested in?", user: "She wants to study something medical-related" },
+                    { bot: "I see. How are her current grades and English proficiency?", user: "Grades are good, English is decent, TOEFL around 100" },
+                    { bot: "Excellent! Do you have budget considerations?", user: "Budget is okay, but would be better if she can get scholarship" },
+                    { bot: "Understood! I'll match you with the most professional study abroad consultant...", user: null }
+                ],
+                realtimeAnalysis: [
+                    {
+                        trigger: 1,
+                        category: "Student Background",
+                        icon: "🎓",
+                        items: [
+                            { label: "Grade", value: "High School Senior", confidence: 100 },
+                            { label: "Target Country", value: "United States", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "Major Preference",
+                        icon: "📚",
+                        items: [
+                            { label: "Major", value: "Medical-Related", confidence: 90 },
+                            { label: "Field", value: "STEM", confidence: 95 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "Academic Ability",
+                        icon: "⭐",
+                        items: [
+                            { label: "Grades", value: "Good", confidence: 85 },
+                            { label: "TOEFL", value: "100 points", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "Family Background",
+                        icon: "👨‍👩‍👧",
+                        items: [
+                            { label: "Financial Ability", value: "Strong", confidence: 90 },
+                            { label: "Education Focus", value: "High", confidence: 95 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_012',
+                    name: 'Emily Williams',
+                    photo: '👩‍🎓',
+                    title: 'US Medical School Study Abroad Consultant',
+                    experience: 8,
+                    score: 91.2,
+                    matchReasons: [
+                        { category: 'Expertise Match', score: 37, details: 'Specializes in US medical school applications, high success rate' },
+                        { category: 'Client Type', score: 29, details: 'Expert in serving students from medical family background' },
+                        { category: 'Personality Match', score: 17, details: 'Meticulous & professional, perfect for cautious parents' },
+                        { category: 'Historical Performance', score: 8.2, details: 'Conversion rate 82%, admission rate 95%' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Graduate School Application Consulting', probability: 70, timing: '4 years later', reason: 'Medical students typically continue advanced studies' },
+                    { product: 'Sibling Study Abroad Consulting', probability: 65, timing: '2-3 years later', reason: 'Success stories easily lead to family referrals' }
+                ]
+            },
+            
+            interior_design_home: {
+                title: "Case 5: Interior Design - New Home Renovation",
+                industry: "Interior Design",
+                icon: "🏡",
+                customer: {
+                    basic: {
+                        name: "Jessica Lin",
+                        age: 29,
+                        gender: "Female",
+                        location: "Seattle, WA",
+                        occupation: "Marketing Manager",
+                        income: "Annual income $80K-120K"
+                    },
+                    personality: {
+                        decisionStyle: "Feeling-Driven",
+                        communicationStyle: "Values visual and atmosphere",
+                        riskTolerance: "Moderate",
+                        trustBuilding: "Needs portfolio and style resonance",
+                        pacePreference: "Wants to find the right feel, willing to take time"
+                    },
+                    needs: {
+                        primary: [
+                            { text: "New Home Design", priority: "P0", confidence: 98 },
+                            { text: "Warm Minimalist Style", priority: "P0", confidence: 95 }
+                        ],
+                        secondary: [
+                            { text: "Natural Material Use", priority: "P1", confidence: 90 },
+                            { text: "Adequate Storage Function", priority: "P1", confidence: 85 }
+                        ],
+                        hidden: [
+                            { text: "Future Expansion Flexibility", confidence: 75 },
+                            { text: "Smart Home Integration", confidence: 70 }
+                        ]
+                    },
+                    behavioral: {
+                        conversionProbability: 88,
+                        estimatedValue: "$80K-120K",
+                        timeToDecision: "1-2 weeks",
+                        followUpStrategy: "Share portfolio, style cases, client testimonials"
+                    }
+                },
+                conversation: [
+                    { bot: "Hello! I'm AI Design Advisor Alex. What design services are you interested in today?", user: "I recently bought a new house and want interior design" },
+                    { bot: "Wonderful! Congratulations! What's your budget range?", user: "Around $80K to $120K" },
+                    { bot: "Got it. What style do you prefer?", user: "I like warm, simple, not too complicated" },
+                    { bot: "Great choice! Any material preferences?", user: "I like wood and natural materials, feels more comfortable" },
+                    { bot: "I understand! Last question, is storage important to you?", user: "Very important! I have a lot of stuff, but don't want it to look messy" },
+                    { bot: "Perfect! I have a complete understanding of your needs. Let me match you with the most suitable designer...", user: null }
+                ],
+                realtimeAnalysis: [
+                    { 
+                        trigger: 1,
+                        category: "Project Background",
+                        icon: "🏠",
+                        items: [
+                            { label: "Project Type", value: "New Home Design", confidence: 98 },
+                            { label: "Living Status", value: "Ready to Move In", confidence: 100 }
+                        ]
+                    },
+                    {
+                        trigger: 2,
+                        category: "Budget Assessment",
+                        icon: "💰",
+                        items: [
+                            { label: "Budget Range", value: "$80K-120K", confidence: 100 },
+                            { label: "Spending Power", value: "Medium", confidence: 95 }
+                        ]
+                    },
+                    {
+                        trigger: 3,
+                        category: "Style Preference",
+                        icon: "✨",
+                        items: [
+                            { label: "Style Keywords", value: "Warm Minimalist", confidence: 95 },
+                            { label: "Aesthetic Type", value: "Natural & Cozy", confidence: 90 }
+                        ]
+                    },
+                    {
+                        trigger: 4,
+                        category: "Material Preference",
+                        icon: "🌳",
+                        items: [
+                            { label: "Preferred Materials", value: "Wood/Natural", confidence: 90 },
+                            { label: "Style Tag", value: "Warm Minimal", confidence: 88 }
+                        ]
+                    },
+                    {
+                        trigger: 5,
+                        category: "Functional Needs",
+                        icon: "📦",
+                        items: [
+                            { label: "Storage Needs", value: "High", confidence: 100 },
+                            { label: "Living Habits", value: "Values Organization", confidence: 92 }
+                        ]
+                    },
+                    {
+                        trigger: 6,
+                        category: "Matching Prep",
+                        icon: "🤖",
+                        items: [
+                            { label: "Style Positioning", value: "Warm Minimal/Natural", confidence: 95 },
+                            { label: "Matching Confidence", value: "Very High", confidence: 98 }
+                        ]
+                    }
+                ],
+                bestAgent: {
+                    id: 'agent_018',
+                    name: 'Sophia Martinez',
+                    photo: '👩‍🎨',
+                    title: 'Warm Style Space Designer',
+                    experience: 7,
+                    score: 93.8,
+                    matchReasons: [
+                        { category: 'Style Match', score: 38, details: 'Specializes in warm minimalist style, natural material use' },
+                        { category: 'Client Type', score: 31, details: 'Expert in serving young first-time buyers, values living feel' },
+                        { category: 'Communication Style', score: 17, details: 'Good at visual communication, avoids technical jargon' },
+                        { category: 'Historical Performance', score: 7.8, details: 'Conversion rate 88%, satisfaction 4.9/5.0' }
+                    ]
+                },
+                crossSellOpportunities: [
+                    { product: 'Smart Storage System', probability: 85, timing: 'Design Phase', reason: 'Customer highly values storage, can improve space efficiency' },
+                    { product: 'Material Upgrade Plan', probability: 78, timing: 'Before Construction', reason: 'Prefers natural materials, usually willing to upgrade budget for quality' },
+                    { product: 'Smart Lighting System', probability: 70, timing: '3-6 months later', reason: 'Young customers have high acceptance of smart home' }
+                ]
+            }
+        };
+        
+        const AGENT_PROFILES = {
+            agent_001: {
+                id: 'agent_001',
+                name: 'Sarah Johnson',
+                photo: '👩‍💼',
+                title: 'Senior Insurance Planner',
+                experience: 12,
+                age: 38,
+                education: 'Stanford Finance',
+                certifications: ['CFP', 'LUTCF', 'RFC'],
+                personality: {
+                    extroversion: 7,
+                    agreeableness: 9,
+                    conscientiousness: 8,
+                    emotionalStability: 8,
+                    openness: 6,
+                    patience: 9,
+                    empathy: 9
+                },
+                skills: {
+                    productKnowledge: 9,
+                    needsAnalysis: 9,
+                    relationshipBuilding: 9,
+                    negotiation: 7,
+                    presentation: 8,
+                    closingTechnique: 8
+                },
+                performance: {
+                    conversionRate: 85,
+                    avgDealSize: 120000,
+                    customerSatisfaction: 4.8,
+                    referralRate: 78
+                },
+                learningData: {
+                    totalMatches: 156,
+                    successfulMatches: 132,
+                    accuracyRate: 84.6,
+                    improvementTrend: '+5.2%'
+                }
+            },
+            agent_005: {
+                id: 'agent_005',
+                name: 'James Anderson',
+                photo: '👨‍💼',
+                title: 'Investment Property Expert',
+                experience: 10,
+                age: 35,
+                education: 'Columbia Real Estate',
+                certifications: ['Real Estate Broker', 'Urban Planning Specialist'],
+                personality: {
+                    extroversion: 9,
+                    agreeableness: 7,
+                    conscientiousness: 9,
+                    emotionalStability: 9,
+                    openness: 8,
+                    assertiveness: 9
+                },
+                skills: {
+                    productKnowledge: 10,
+                    needsAnalysis: 9,
+                    negotiation: 10,
+                    dataAnalysis: 10,
+                    closingTechnique: 9
+                },
+                performance: {
+                    conversionRate: 72,
+                    avgDealSize: 25000000,
+                    customerSatisfaction: 4.9,
+                    referralRate: 85
+                },
+                learningData: {
+                    totalMatches: 203,
+                    successfulMatches: 146,
+                    accuracyRate: 71.9,
+                    improvementTrend: '+3.8%'
+                }
+            },
+            agent_008: {
+                id: 'agent_008',
+                name: 'Thomas Brown',
+                photo: '👨‍💼',
+                title: 'Manufacturing Digital Transformation Consultant',
+                experience: 15,
+                age: 42,
+                education: 'MIT Industrial Engineering',
+                certifications: ['PMP', 'Six Sigma'],
+                skills: {
+                    industryKnowledge: 10,
+                    technicalExpertise: 9,
+                    projectManagement: 9
+                },
+                performance: {
+                    conversionRate: 65,
+                    customerSatisfaction: 4.7,
+                    renewalRate: 92
+                },
+                learningData: {
+                    totalMatches: 89,
+                    successfulMatches: 58,
+                    accuracyRate: 65.2,
+                    improvementTrend: '+4.1%'
+                }
+            },
+            agent_012: {
+                id: 'agent_012',
+                name: 'Emily Williams',
+                photo: '👩‍🎓',
+                title: 'US Medical School Study Abroad Consultant',
+                experience: 8,
+                age: 33,
+                education: 'UCLA Education Masters',
+                certifications: ['IECA'],
+                skills: {
+                    applicationExpertise: 10,
+                    counseling: 9,
+                    networkConnections: 8
+                },
+                performance: {
+                    conversionRate: 82,
+                    admissionRate: 95,
+                    customerSatisfaction: 4.9
+                },
+                learningData: {
+                    totalMatches: 124,
+                    successfulMatches: 102,
+                    accuracyRate: 82.3,
+                    improvementTrend: '+6.1%'
+                }
+            },
+            agent_018: {
+                id: 'agent_018',
+                name: 'Sophia Martinez',
+                photo: '👩‍🎨',
+                title: 'Warm Style Space Designer',
+                experience: 7,
+                age: 34,
+                education: 'Parsons Interior Design',
+                certifications: ['NCIDQ', 'LEED GA'],
+                personality: {
+                    extroversion: 7,
+                    agreeableness: 9,
+                    conscientiousness: 8,
+                    emotionalStability: 8,
+                    openness: 9,
+                    aestheticSensitivity: 10,
+                    empathy: 9
+                },
+                skills: {
+                    styleExpertise: 10,
+                    spatialPlanning: 9,
+                    materialSelection: 10,
+                    visualCommunication: 9,
+                    budgetManagement: 8,
+                    clientCounseling: 9
+                },
+                performance: {
+                    conversionRate: 88,
+                    avgDealSize: 1000000,
+                    customerSatisfaction: 4.9,
+                    referralRate: 92
+                },
+                learningData: {
+                    totalMatches: 167,
+                    successfulMatches: 147,
+                    accuracyRate: 88.0,
+                    improvementTrend: '+6.8%'
+                }
+            }
+        };
+        
+        const SceneManager = {
+            currentScene: 'intro',
+            currentCase: null,
+            conversationPaused: false,
+            conversationFinished: false,
+            sceneOrder: ['intro', 'caseSelect', 'conversation', 'processing', 'cdp', 'matching', 'agentProfile', 'aiCoaching', 'feedback', 'crossProduct', 'learning', 'final'],
+            
+            getProgress() {
+                const index = this.sceneOrder.indexOf(this.currentScene);
+                return index >= 0 ? Math.round((index / (this.sceneOrder.length - 1)) * 100) : 0;
+            },
+            
+            updateProgressBar() {
+                const progressBar = document.getElementById('progressBar');
+                const progressBarFill = document.getElementById('progressBarFill');
+                
+                if (this.currentScene === 'intro' || this.currentScene === 'caseSelect') {
+                    progressBar.style.display = 'none';
+                } else {
+                    progressBar.style.display = 'block';
+                    progressBarFill.style.width = this.getProgress() + '%';
+                }
+            },
+            
+            switchTo(sceneName, data = {}) {
+                this.currentScene = sceneName;
+                this.updateProgressBar();
+                
+                const container = document.getElementById('mainContainer');
+                container.innerHTML = '';
+                container.scrollTop = 0;
+                window.scrollTo(0, 0);
+                
+                const scenes = {
+                    intro: IntroScene,
+                    caseSelect: CaseSelectScene,
+                    conversation: ConversationScene,
+                    processing: ProcessingScene,
+                    cdp: CDPScene,
+                    matching: MatchingScene,
+                    agentProfile: AgentProfileScene,
+                    aiCoaching: AICoachingScene,
+                    feedback: FeedbackScene,
+                    crossProduct: CrossProductScene,
+                    learning: LearningScene,
+                    final: FinalScene
+                };
+                
+                if (scenes[sceneName]) {
+                    scenes[sceneName](container, data);
+                }
+            }
+        };
+        
+        function IntroScene(container) {
+            container.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center">
+                    <div class="text-center fade-in-up">
+                        <div class="text-6xl font-black mb-6 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            AIM Platform
+                        </div>
+                        <div class="text-3xl font-bold mb-4 text-gray-300">
+                            AI-Powered Customer Analysis & Matching Platform
+                        </div>
+                        <div class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+                            Deep customer understanding with AI, precise agent matching<br>
+                            <span class="text-sm mt-2 block text-gray-500">5 Industry Case Studies + Complete Learning Feedback Loop</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="text-sm font-medium">AI Deep Conversation</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">📊</div>
+                                <div class="text-sm font-medium">360° CDP</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <div class="text-sm font-medium">Smart Matching</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">👤</div>
+                                <div class="text-sm font-medium">Agent Profile</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="text-sm font-medium">AI Coach</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">📈</div>
+                                <div class="text-sm font-medium">Learning Feedback</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🔄</div>
+                                <div class="text-sm font-medium">Cross-Product Extension</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="text-sm font-medium">AI Evolution</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 data-card">
+                                <div class="text-4xl mb-2">💰</div>
+                                <div class="text-sm font-medium">ROI Tracking</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+                            <div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl p-6">
+                                <div class="text-5xl font-black mb-2">+35%*</div>
+                                <div class="text-lg opacity-90">Conversion Rate</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-6">
+                                <div class="text-5xl font-black mb-2">-60%*</div>
+                                <div class="text-lg opacity-90">Wasted Visits</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-6">
+                                <div class="text-5xl font-black mb-2">Up To 10X*</div>
+                                <div class="text-lg opacity-90">Customer Lifetime Value</div>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onclick="SceneManager.switchTo('caseSelect')"
+                            class="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold rounded-full hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-2xl"
+                        >
+                            Start Full Demo →
+                        </button>
+                        <div class="mt-8 text-sm text-gray-500">
+                            ⚡ 5 Industry Real Cases × Complete Closed-Loop Process
+                        </div>
+			<div class="mt-2 text-sm text-gray-500">
+			    <a href="supporting-reference.html" class="demo-button">
+                                  					<span>*Supporting Reference▶</span>
+                           					 </a>
+			</div>
+
+                    </div>
+                </div>
+            `;
+        }
+        
+        function CaseSelectScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-12 fade-in-up">
+                        <div class="text-5xl font-bold mb-4">📚 Select Industry Case</div>
+                        <div class="text-xl text-gray-400">Each case includes complete conversation → analysis → matching → feedback → extension flow</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-6 mb-8">
+                        ${Object.entries(CASE_STUDIES).map(([key, caseData]) => `
+                            <div class="case-card bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20"
+                                 onclick="SceneManager.currentCase = '${key}'; SceneManager.conversationFinished = false; SceneManager.switchTo('conversation')">
+                                <div class="flex items-center gap-6">
+                                    <div class="text-7xl">${caseData.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="text-2xl font-bold mb-2">${caseData.title}</div>
+                                        <div class="text-sm text-gray-400 mb-3">
+                                            <strong>Customer:</strong> ${caseData.customer.basic.name} | 
+                                            <strong>Background:</strong> ${caseData.customer.basic.occupation}
+                                        </div>
+                                        <div class="flex gap-2 flex-wrap">
+                                            <span class="px-3 py-1 bg-purple-500/20 rounded-full text-xs">🎯 Smart Matching</span>
+                                            <span class="px-3 py-1 bg-blue-500/20 rounded-full text-xs">🤖 AI Coach</span>
+                                            <span class="px-3 py-1 bg-green-500/20 rounded-full text-xs">📈 Learning Feedback</span>
+                                            <span class="px-3 py-1 bg-orange-500/20 rounded-full text-xs">🔄 Cross-Product Extension</span>
+                                        </div>
+					<div class="mt-2 text-xs text-gray-400">
+						*All customer profiles, assets, and figures shown in this demo are simulated for demonstration purposes only.
+					</div>
+                                    </div>
+                                    <div class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-lg font-bold">
+                                        Start Demo →
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="text-center">
+                        <button 
+                            onclick="SceneManager.switchTo('intro')"
+                            class="px-8 py-3 bg-white/20 text-white text-lg font-bold rounded-full hover:bg-white/30 transition-all"
+                        >
+                            ← Back to Home
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function ConversationScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            SceneManager.conversationPaused = false;
+            SceneManager.conversationFinished = false;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-4xl font-bold mb-2">🤖 AI Natural Conversation + Real-time Analysis</div>
+                        <div class="text-gray-400">Deep customer understanding through casual conversation</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="text-3xl">💬</div>
+                                    <div class="text-2xl font-bold">Conversation in Progress</div>
+                                </div>
+                                <div id="chatContainer" class="space-y-4 mb-6" style="min-height: 500px; max-height: 600px; overflow-y: auto;">
+                                </div>
+                                <div class="flex justify-center gap-4">
+                                    <button id="pauseBtn" 
+                                            onclick="togglePause()"
+                                            class="px-8 py-3 bg-yellow-600 rounded-full font-bold hover:bg-yellow-700 transition-all">
+                                        ⏸️ Pause
+                                    </button>
+                                    <button id="nextBtn" 
+                                            onclick="SceneManager.switchTo('processing')" 
+                                            style="display: none;"
+                                            class="px-12 py-4 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full font-bold hover:from-green-700 hover:to-emerald-700 transition-all glow-animation">
+                                        ✅ Conversation Complete, Next Step →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:col-span-1">
+                            <div class="analysis-panel bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-2xl p-6 border border-purple-500/50">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="text-3xl">🔍</div>
+                                    <div>
+                                        <div class="text-xl font-bold">Real-time Analysis</div>
+                                        <div class="text-xs text-gray-400">AI is analyzing...</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="relative mb-6">
+                                    <div class="scan-line"></div>
+                                    <div class="bg-white/10 rounded-lg p-4 border border-white/20">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div class="w-3 h-3 bg-green-500 rounded-full pulse-animation"></div>
+                                            <div class="text-sm font-bold">Status: Running</div>
+                                        </div>
+                                        <div class="text-xs text-gray-400">Processed <span id="processedRounds">0</span> conversation rounds</div>
+                                    </div>
+                                </div>
+                                
+                                <div id="analysisContainer" class="space-y-4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const chatContainer = document.getElementById('chatContainer');
+            const analysisContainer = document.getElementById('analysisContainer');
+            const processedRounds = document.getElementById('processedRounds');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            window.togglePause = function() {
+                SceneManager.conversationPaused = !SceneManager.conversationPaused;
+                pauseBtn.textContent = SceneManager.conversationPaused ? '▶️ Resume' : '⏸️ Pause';
+            };
+            
+            async function showConversation() {
+                for (let i = 0; i < caseData.conversation.length; i++) {
+                    while (SceneManager.conversationPaused) {
+                        await delay(100);
+                    }
+                    
+                    const msg = caseData.conversation[i];
+                    
+                    if (msg.bot) {
+                        await delay(1500);
+                        const botDiv = document.createElement('div');
+                        botDiv.className = 'flex items-start gap-3 slide-in-right';
+                        botDiv.innerHTML = `
+                            <div class="text-3xl">🤖</div>
+                            <div class="bg-blue-500/20 border border-blue-500/50 rounded-2xl rounded-tl-none px-6 py-3 max-w-xl">
+                                ${msg.bot}
+                            </div>
+                        `;
+                        chatContainer.appendChild(botDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+                    
+                    if (msg.user) {
+                        await delay(2000);
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'flex items-start gap-3 justify-end slide-in-right';
+                        userDiv.innerHTML = `
+                            <div class="bg-purple-500/20 border border-purple-500/50 rounded-2xl rounded-tr-none px-6 py-3 max-w-xl">
+                                ${msg.user}
+                            </div>
+                            <div class="text-3xl">👤</div>
+                        `;
+                        chatContainer.appendChild(userDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                        processedRounds.textContent = i + 1;
+                        
+                        const analysisData = caseData.realtimeAnalysis.find(a => a.trigger === i + 1);
+                        if (analysisData) {
+                            await delay(800);
+                            addAnalysisItem(analysisData, analysisContainer);
+                        }
+                    }
+                }
+                
+                SceneManager.conversationFinished = true;
+                pauseBtn.style.display = 'none';
+                nextBtn.style.display = 'inline-block';
+            }
+            
+            function addAnalysisItem(data, container) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'analysis-item bg-white/10 rounded-xl p-4 border border-white/20';
+                
+                itemDiv.innerHTML = `
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="text-2xl">${data.icon}</div>
+                        <div class="font-bold">${data.category}</div>
+                    </div>
+                    <div class="space-y-2">
+                        ${data.items.map(item => `
+                            <div class="bg-white/5 rounded-lg p-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="text-sm text-gray-300">${item.label}</div>
+                                    <div class="text-xs bg-green-500/20 border border-green-500/50 px-2 py-1 rounded">
+                                        ${item.confidence}%
+                                    </div>
+                                </div>
+                                <div class="font-bold text-sm">${item.value}</div>
+                                <div class="confidence-bar bg-white/10 rounded-full h-2 mt-2">
+                                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full h-2 transition-all duration-1000" 
+                                         style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(itemDiv);
+                
+                setTimeout(() => {
+                    itemDiv.classList.add('active');
+                    itemDiv.querySelectorAll('.confidence-bar > div').forEach((bar, index) => {
+                        setTimeout(() => {
+                            bar.style.width = data.items[index].confidence + '%';
+                        }, 300);
+                    });
+                }, 100);
+            }
+            
+            showConversation();
+        }
+        
+        function ProcessingScene(container) {
+            container.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center">
+                    <div class="text-center fade-in-up">
+                        <div class="text-6xl mb-6 rotate-animation">🧠</div>
+                        <div class="text-4xl font-bold mb-4">AI Deep Analysis in Progress...</div>
+                        <div class="text-gray-400 mb-8">Parsing customer needs, personality traits, purchase intent</div>
+                        <div class="flex justify-center gap-2">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full pulse-animation" style="animation-delay: 0s;"></div>
+                            <div class="w-3 h-3 bg-pink-500 rounded-full pulse-animation" style="animation-delay: 0.2s;"></div>
+                            <div class="w-3 h-3 bg-blue-500 rounded-full pulse-animation" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => SceneManager.switchTo('cdp'), 2000);
+        }
+        
+        function CDPScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const customer = caseData.customer;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">📊 360° Customer Data Platform (CDP)</div>
+                        <div class="text-xl text-gray-400">AI Automatically Constructs Complete Customer Profile</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl p-8 mb-8 fade-in-up">
+                        <div class="flex items-center gap-8">
+                            <div class="text-9xl">👤</div>
+                            <div class="flex-1">
+                                <div class="text-4xl font-bold mb-2">${customer.basic.name}</div>
+                                <div class="text-2xl mb-4">${customer.basic.occupation}</div>
+                                <div class="grid grid-cols-2 gap-4 text-lg">
+                                    <div><strong>Age:</strong> ${customer.basic.age} years</div>
+                                    <div><strong>Location:</strong> ${customer.basic.location}</div>
+                                    <div><strong>Income:</strong> ${customer.basic.income}</div>
+                                    ${customer.basic.company ? `<div><strong>Company:</strong> ${customer.basic.company}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 data-card">
+                            <div class="text-2xl font-bold mb-4">🧠 Personality Analysis</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Decision Style</span>
+                                        <span class="font-bold">${customer.personality.decisionStyle}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Communication Preference</span>
+                                        <span class="font-bold">${customer.personality.communicationStyle}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Risk Tolerance</span>
+                                        <span class="font-bold">${customer.personality.riskTolerance}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Decision Pace</span>
+                                        <span class="font-bold">${customer.personality.pacePreference}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 data-card">
+                            <div class="text-2xl font-bold mb-4">🎯 Needs Structure</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-sm text-gray-400 mb-2">Core Needs</div>
+                                    ${customer.needs.primary.map(need => `
+                                        <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-2 mb-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm">${need.text}</span>
+                                                <span class="text-xs bg-green-500/30 px-2 py-1 rounded">${need.confidence}%</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-400 mb-2">Secondary Needs</div>
+                                    ${customer.needs.secondary.slice(0, 2).map(need => `
+                                        <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-2 mb-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm">${need.text}</span>
+                                                <span class="text-xs bg-blue-500/30 px-2 py-1 rounded">${need.confidence}%</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">🔮 AI Behavioral Prediction</div>
+                        <div class="grid grid-cols-4 gap-6">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${customer.behavioral.conversionProbability}%</div>
+                                <div class="text-sm opacity-90">Conversion Probability</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-2xl font-bold mb-2">${customer.behavioral.estimatedValue.split(' + ')[0] || customer.behavioral.estimatedValue}</div>
+                                <div class="text-sm opacity-90">Estimated Value</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-2xl font-bold mb-2">${customer.behavioral.timeToDecision}</div>
+                                <div class="text-sm opacity-90">Decision Time</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">⭐</div>
+                                <div class="text-sm opacity-90">High-Quality Lead</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('conversation')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← Back to Conversation
+                        </button>
+                        <button onclick="SceneManager.switchTo('matching')"
+                                class="px-12 py-4 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-xl font-bold glow-animation hover:from-green-700 hover:to-emerald-700 transition-all">
+                            Start Smart Matching →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function MatchingScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agent = caseData.bestAgent;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🎯 AI Smart Matching System</div>
+                        <div class="text-xl text-gray-400">Based on 89 dimensions of precise matching</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl p-8 mb-8 fade-in-up glow-animation">
+                        <div class="text-center mb-6">
+                            <div class="text-2xl font-bold mb-2">🏆 Best Match</div>
+                            <div class="matching-score">${Math.round(agent.score)}</div>
+                            <div class="text-xl opacity-90">Match Score</div>
+                        </div>
+                        <div class="flex items-center gap-8 bg-white/10 rounded-2xl p-8">
+                            <div class="text-8xl">${agent.photo}</div>
+                            <div class="flex-1">
+                                <div class="text-4xl font-bold mb-2">${agent.name}</div>
+                                <div class="text-2xl mb-4">${agent.title}</div>
+                                <div class="text-lg opacity-90">Experience: ${agent.experience} years</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">💡 Why ${agent.name}?</div>
+                        <div class="space-y-4">
+                            ${agent.matchReasons.map(reason => `
+                                <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/50 rounded-xl p-6">
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="text-3xl font-black text-purple-300">${reason.score}</div>
+                                        <div class="flex-1">
+                                            <div class="text-xl font-bold mb-1">${reason.category}</div>
+                                            <div class="text-sm opacity-90">${reason.details}</div>
+                                        </div>
+                                        <div class="text-2xl">✓</div>
+                                    </div>
+                                    <div class="bg-white/10 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full h-2" 
+                                             style="width: ${(reason.score / 40) * 100}%;"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('cdp')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← Back to CDP
+                        </button>
+                        <button onclick="SceneManager.switchTo('agentProfile')"
+                                class="px-12 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full text-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition-all">
+                            View Agent Profile →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function AgentProfileScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agentId = caseData.bestAgent.id;
+            const agent = AGENT_PROFILES[agentId];
+            
+            const skillNames = {
+                productKnowledge: 'Product Knowledge',
+                needsAnalysis: 'Needs Analysis',
+                relationshipBuilding: 'Relationship Building',
+                negotiation: 'Negotiation',
+                presentation: 'Presentation',
+                closingTechnique: 'Closing Technique',
+                industryKnowledge: 'Industry Knowledge',
+                technicalExpertise: 'Technical Expertise',
+                projectManagement: 'Project Management',
+                applicationExpertise: 'Application Expertise',
+                counseling: 'Counseling',
+                networkConnections: 'Network Connections',
+                styleExpertise: 'Style Expertise',
+                spatialPlanning: 'Spatial Planning',
+                materialSelection: 'Material Selection',
+                visualCommunication: 'Visual Communication',
+                budgetManagement: 'Budget Management',
+                clientCounseling: 'Client Counseling',
+                dataAnalysis: 'Data Analysis'
+            };
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">👤 Complete Agent Profile System</div>
+                        <div class="text-xl text-gray-400">Deep understanding of every agent's traits and expertise</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl p-8 mb-8 fade-in-up">
+                        <div class="flex items-center gap-8">
+                            <div class="text-9xl">${agent.photo}</div>
+                            <div class="flex-1">
+                                <div class="text-5xl font-bold mb-2">${agent.name}</div>
+                                <div class="text-3xl mb-4">${agent.title}</div>
+                                <div class="grid grid-cols-2 gap-4 text-lg">
+                                    <div><strong>Experience:</strong> ${agent.experience} years</div>
+                                    <div><strong>Age:</strong> ${agent.age || 'Private'} years</div>
+                                    <div><strong>Education:</strong> ${agent.education}</div>
+                                    <div><strong>Certifications:</strong> ${agent.certifications.slice(0, 2).join(', ')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4">💪 Professional Skills</div>
+                            <div class="space-y-3">
+                                ${Object.entries(agent.skills).slice(0, 6).map(([skill, level]) => `
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>${skillNames[skill] || skill}</span>
+                                            <span class="font-bold">${level}/10</span>
+                                        </div>
+                                        <div class="bg-white/10 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full h-2" 
+                                                 style="width: ${level * 10}%;"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4">📊 Historical Performance</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gradient-to-br from-green-600/30 to-emerald-600/30 rounded-xl p-4 text-center">
+                                    <div class="text-3xl font-black mb-1">${agent.performance.conversionRate}%</div>
+                                    <div class="text-xs">Conversion Rate</div>
+                                </div>
+                                <div class="bg-gradient-to-br from-blue-600/30 to-cyan-600/30 rounded-xl p-4 text-center">
+                                    <div class="text-3xl font-black mb-1">${agent.performance.customerSatisfaction}</div>
+                                    <div class="text-xs">Satisfaction</div>
+                                </div>
+                                ${agent.performance.avgDealSize ? `
+                                    <div class="bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">$${(agent.performance.avgDealSize / 1000).toFixed(0)}K</div>
+                                        <div class="text-xs">Avg Deal Size</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.renewalRate ? `
+                                    <div class="bg-gradient-to-br from-amber-600/30 to-orange-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">${agent.performance.renewalRate}%</div>
+                                        <div class="text-xs">Renewal Rate</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.referralRate ? `
+                                    <div class="bg-gradient-to-br from-pink-600/30 to-rose-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">${agent.performance.referralRate}%</div>
+                                        <div class="text-xs">Referral Rate</div>
+                                    </div>
+                                ` : ''}
+                                ${agent.performance.admissionRate ? `
+                                    <div class="bg-gradient-to-br from-green-600/30 to-teal-600/30 rounded-xl p-4 text-center col-span-2">
+                                        <div class="text-2xl font-black mb-1">${agent.performance.admissionRate}%</div>
+                                        <div class="text-xs">Admission Rate</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">📈 AI Learning Data</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.totalMatches}</div>
+                                <div class="text-sm">Total Matches</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.successfulMatches}</div>
+                                <div class="text-sm">Successful</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">${agent.learningData.accuracyRate}%</div>
+                                <div class="text-sm">Accuracy</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black text-green-300 mb-2">${agent.learningData.improvementTrend}</div>
+                                <div class="text-sm">Improvement</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('matching')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← Back to Matching
+                        </button>
+                        <button onclick="SceneManager.switchTo('aiCoaching')"
+                                class="px-12 py-4 bg-gradient-to-r from-orange-600 to-red-600 rounded-full text-xl font-bold hover:from-orange-700 hover:to-red-700 transition-all">
+                            View AI Sales Coach →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function AICoachingScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🤖 AI Sales Coach System</div>
+                        <div class="text-xl text-gray-400">Personalized Guidance & Practical Advice</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">💬 Communication Strategy</div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-white/10 rounded-xl p-6">
+                                <div class="text-xl font-bold mb-3">✅ Recommended</div>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• Show professionalism and friendliness to build trust</li>
+                                    <li>• Support every suggestion with data for rational decision-makers</li>
+                                    <li>• Share case studies to increase persuasiveness</li>
+                                    <li>• Be patient, don't rush to sell</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6">
+                                <div class="text-xl font-bold mb-3">❌ Avoid</div>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• Don't be too aggressive or impatient</li>
+                                    <li>• Avoid only talking features, start from needs</li>
+                                    <li>• Don't ignore customer's latent needs</li>
+                                    <li>• Avoid overwhelming with too much information</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">🎯 Closing Path Planning</div>
+                        <div class="space-y-4">
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">1st Meeting (This Week)</div>
+                                <div class="text-sm text-gray-400">Build trust, understand complete needs, initial proposal</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2nd Meeting (Next Week)</div>
+                                <div class="text-sm text-gray-400">Provide detailed plan comparison, answer questions, handle objections</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">3rd Meeting (2 Weeks Later)</div>
+                                <div class="text-sm text-gray-400">Final confirmation, close the deal</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('agentProfile')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← Back to Agent Profile
+                        </button>
+                        <button onclick="SceneManager.switchTo('feedback')"
+                                class="px-12 py-4 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full text-xl font-bold hover:from-amber-700 hover:to-orange-700 transition-all">
+                            Simulate Post-Deal Feedback →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function FeedbackScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const agent = AGENT_PROFILES[caseData.bestAgent.id];
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">📈 Learning Feedback System</div>
+                        <div class="text-xl text-gray-400">Track matching results, let AI continuously evolve</div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-2xl font-bold mb-6">⏱️ Matching Tracking Timeline</div>
+                        <div class="space-y-6">
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-11 14:30</div>
+                                <div class="text-gray-400">AI completed customer analysis</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-11 14:35</div>
+                                <div class="text-gray-400">Matched with ${agent.name} (Score: ${caseData.bestAgent.score})</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-11 15:00</div>
+                                <div class="text-gray-400">${agent.name} received customer data and started follow-up</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-18</div>
+                                <div class="text-gray-400">First meeting (AI recommendations in action)</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="font-bold mb-1">2026-02-25</div>
+                                <div class="text-green-400 font-bold">✅ Deal Closed!</div>
+                            </div>
+                            <div class="timeline-item glow-animation">
+                                <div class="font-bold mb-1 text-amber-400">2026-02-26 (Now)</div>
+                                <div class="text-amber-400">📊 Collecting feedback data...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4 text-green-400">✅ Deal Result</div>
+                            <div class="space-y-4">
+                                <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-4">
+                                    <div class="text-sm text-gray-400 mb-1">Status</div>
+                                    <div class="text-2xl font-bold">Closed</div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4">
+                                    <div class="text-sm text-gray-400 mb-1">Deal Amount</div>
+                                    <div class="text-xl font-bold">${caseData.customer.behavioral.estimatedValue.split(' + ')[0] || caseData.customer.behavioral.estimatedValue}</div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4">
+                                    <div class="text-sm text-gray-400 mb-1">Decision Cycle</div>
+                                    <div class="text-xl font-bold">14 days</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4 text-blue-400">😊 Customer Feedback</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-sm mb-2">Overall Satisfaction</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold">9</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-sm mb-2">Agent Match</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold">9</span>
+                                    </div>
+                                </div>
+                                <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-3 text-center">
+                                    <div class="text-sm">Would Recommend</div>
+                                    <div class="text-2xl font-bold">✅ Yes</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-2xl font-bold mb-4 text-purple-400">👩‍💼 Agent Feedback</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-sm mb-2">Matching Accuracy</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="9" disabled>
+                                        <span class="text-2xl font-bold">9</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-sm mb-2">AI Advice Usefulness</div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" class="feedback-slider" min="1" max="10" value="8" disabled>
+                                        <span class="text-2xl font-bold">8</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-3">
+                                    <div class="text-xs italic">
+                                        "AI's customer analysis was very accurate, communication strategy was practical"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">🤖 AI Learning Analysis</div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <div class="text-xl font-bold mb-4">✅ What Worked</div>
+                                <div class="space-y-2">
+                                    <div class="bg-white/10 p-3 rounded-lg">
+                                        <div class="font-bold mb-1">Accurate Personality Match</div>
+                                        <div class="text-sm opacity-90">Customer's "${caseData.customer.personality.decisionStyle}" trait identified correctly</div>
+                                    </div>
+                                    <div class="bg-white/10 p-3 rounded-lg">
+                                        <div class="font-bold mb-1">Deep Needs Discovery</div>
+                                        <div class="text-sm opacity-90">Successfully identified latent needs, creating greater value</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-xl font-bold mb-4">📝 Areas for Improvement</div>
+                                <div class="space-y-2">
+                                    <div class="bg-white/10 p-3 rounded-lg">
+                                        <div class="font-bold mb-1">Conservative Budget Estimate</div>
+                                        <div class="text-sm opacity-90">Actual deal amount exceeded initial estimate</div>
+                                        <div class="text-xs text-amber-300 mt-1">→ Adjust budget assessment model</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('aiCoaching')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← Back to AI Coach
+                        </button>
+                        <button onclick="SceneManager.switchTo('crossProduct')"
+                                class="px-12 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full text-xl font-bold hover:from-cyan-700 hover:to-blue-700 transition-all">
+                            View Cross-Product Extensions →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function CrossProductScene(container) {
+            const caseData = CASE_STUDIES[SceneManager.currentCase];
+            const opportunities = caseData.crossSellOpportunities;
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🔄 Cross-Product Extension System</div>
+                        <div class="text-xl text-gray-400">One profile, maximize lifetime value</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">📋 Unified Customer Profile (Cross-Product Shared)</div>
+                        <div class="text-center">
+                            <div class="bg-white/10 rounded-xl p-6 inline-block">
+                                <div class="text-lg mb-2">Profile ID: <span class="font-mono">CUST_20260211_001</span></div>
+                                <div class="text-sm bg-green-500/20 border border-green-500/50 px-4 py-2 rounded-full inline-block">
+                                    ✅ Accessible across all product lines
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">🎯 AI-Identified Cross-Product Opportunities</div>
+                        <div class="space-y-4">
+                            ${opportunities.map((opp, index) => `
+                                <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/50 rounded-xl p-6">
+                                    <div class="flex items-center gap-6">
+                                        <div class="text-5xl">📦</div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-4 mb-2 flex-wrap">
+                                                <div class="text-2xl font-bold">${index + 1}. ${opp.product}</div>
+                                                <div class="px-4 py-1 bg-orange-500/30 border border-orange-500/50 rounded-full text-sm">
+                                                    Probability: ${opp.probability}%
+                                                </div>
+                                                <div class="px-4 py-1 bg-blue-500/30 border border-blue-500/50 rounded-full text-sm">
+                                                    Timing: ${opp.timing}
+                                                </div>
+                                            </div>
+                                            <div class="text-sm opacity-90 mb-3">${opp.reason}</div>
+                                            <button class="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-sm font-bold hover:from-green-700 hover:to-emerald-700 transition-all">
+                                                Set Auto-Reminder
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">💰 Customer Lifetime Value Prediction (CLV)</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">Current Value</div>
+                                <div class="text-4xl font-black mb-2">$120K</div>
+                                <div class="text-xs opacity-75">Purchased</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">1-Year Projection</div>
+                                <div class="text-4xl font-black mb-2">$280K</div>
+                                <div class="text-xs opacity-75">+Product 2</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">3-Year Projection</div>
+                                <div class="text-4xl font-black mb-2">$650K</div>
+                                <div class="text-xs opacity-75">+Product 3</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm text-gray-300 mb-2">5-Year Projection</div>
+                                <div class="text-4xl font-black text-yellow-300 mb-2">$1.2M</div>
+                                <div class="text-xs opacity-75">Full Ecosystem</div>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center text-lg">
+                            <span class="bg-white/20 px-6 py-3 rounded-full">
+                                📈 Potential lifetime value amplified by <span class="font-black text-yellow-300">Up to 10X</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('feedback')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← Back to Learning Feedback
+                        </button>
+                        <button onclick="SceneManager.switchTo('learning')"
+                                class="px-12 py-4 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full text-xl font-bold hover:from-amber-700 hover:to-orange-700 transition-all">
+                            View AI Evolution →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function LearningScene(container) {
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto py-12">
+                    <div class="text-center mb-8 fade-in-up">
+                        <div class="text-5xl font-bold mb-2">🧠 AI Learning & Evolution</div>
+                        <div class="text-xl text-gray-400">Data-driven, continuous optimization</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6 text-center">🔄 Complete Learning Closed Loop</div>
+                        <div class="text-center text-xl leading-relaxed">
+                            🤖 AI Conversation → 📊 Customer Analysis → 🎯 Smart Matching → 💼 Agent Follow-up<br>
+                            ↓<br>
+                            📈 Collect Feedback → 🔍 Analyze & Learn → ⚡ Optimize Model → 🚀 Upgrade System
+                        </div>
+                        <div class="text-center mt-6">
+                            <span class="bg-yellow-500/20 border border-yellow-500/50 px-6 py-3 rounded-full">
+                                🔁 Continuous cycle, never-ending evolution
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8">
+                        <div class="text-3xl font-bold mb-6">📊 Learning System Statistics</div>
+                        <div class="grid grid-cols-5 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">12,847</div>
+                                <div class="text-sm">Total Feedback</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">82.3%</div>
+                                <div class="text-sm">Avg Accuracy</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black text-yellow-300 mb-2">+15.7%</div>
+                                <div class="text-sm">6-Month Gain</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-2xl font-black mb-2">Customer Analysis</div>
+                                <div class="text-sm">Top Progress</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-4xl font-black mb-2">A-Grade</div>
+                                <div class="text-sm">Data Quality</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-8">
+                        <div class="text-3xl font-bold mb-6">⚡ Snowball Effect: Stronger with Use</div>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">📊</div>
+                                <div class="text-2xl font-bold mb-2">More Data</div>
+                                <div class="text-sm opacity-90">Every match generates feedback</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">🎯</div>
+                                <div class="text-2xl font-bold mb-2">Better Matching</div>
+                                <div class="text-sm opacity-90">AI learns & optimizes</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">💰</div>
+                                <div class="text-2xl font-bold mb-2">Higher Conversion</div>
+                                <div class="text-sm opacity-90">Generates more data</div>
+                            </div>
+                        </div>
+                        <div class="mt-8 text-center text-xl">
+                            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-8 py-4 rounded-full inline-block font-bold">
+                                🔄 Positive Loop, Exponential Growth
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center flex gap-4 justify-center">
+                        <button onclick="SceneManager.switchTo('crossProduct')"
+                                class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                            ← Back to Cross-Product
+                        </button>
+                        <button onclick="SceneManager.switchTo('final')"
+                                class="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all">
+                            View Value Summary →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function FinalScene(container) {
+            container.innerHTML = `
+                <div class="max-w-6xl mx-auto py-12">
+                    <div class="text-center mb-12 fade-in-up">
+                        <div class="text-5xl font-bold mb-4">✨ Complete Value Summary</div>
+                        <div class="text-2xl text-gray-400">From Single Transaction to Lifetime Value - Complete Closed-Loop System</div>
+                    </div>                
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-12">
+                        <div class="text-3xl font-bold mb-6 text-center">🔄 Complete System Architecture</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="font-bold">AI Conversation</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <div class="font-bold">Smart Matching</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🤖</div>
+                                <div class="font-bold">AI Coach</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-amber-600 to-yellow-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">📈</div>
+                                <div class="font-bold">Learning Feedback</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-cyan-600 to-blue-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🔄</div>
+                                <div class="font-bold">Cross-Product</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-pink-600 to-purple-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <div class="font-bold">AI Evolution</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">♾️</div>
+                                <div class="font-bold">Infinite Loop</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-orange-600 to-red-600 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">💰</div>
+                                <div class="font-bold">ROI Tracking</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-12">
+                        <div class="text-3xl font-bold mb-6">💰 Return on Investment (ROI)</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">Conversion Rate</div>
+                                <div class="text-4xl font-black">+35%*</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">Time Saved</div>
+                                <div class="text-4xl font-black">-60%*</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">Customer Value</div>
+                                <div class="text-4xl font-black">Up to 10X*</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-6 text-center">
+                                <div class="text-sm mb-2">Estimated ROI</div>
+                                <div class="text-4xl font-black text-yellow-300">500%*</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-3xl font-bold mb-6">🚀 Ready to Begin?</div>
+                        <div class="flex gap-4 justify-center">
+                            <button onclick="SceneManager.switchTo('caseSelect')"
+                                    class="px-8 py-3 bg-white/20 rounded-full text-lg font-bold hover:bg-white/30 transition-all">
+                                ← Select Another Case
+                            </button>
+                            <button onclick="SceneManager.switchTo('intro')"
+                                    class="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all">
+                                🏠 Back to Home
+                            </button>
+                        </div>
+			<div class="mt-2 text-sm text-gray-500">
+			    <a href="supporting-reference.html" class="demo-button">
+                                 					 <span>*Supporting Reference▶</span>
+                          					  </a>
+			</div>
+
+                    </div>
+                </div>
+            `;
+        }
+        
+        SceneManager.switchTo('intro');
+    </script>
+
+
+</body></html>
